@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function index(Content $content)
     {
         return Admin::content(function (Content $content) {
-            $content->header('查看订单');
+            $content->header('');
             // body 方法可以接受 Laravel 的视图作为参数
             $content->body(view('admin.security.index'));
         });
