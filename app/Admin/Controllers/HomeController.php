@@ -14,7 +14,7 @@ class HomeController extends Controller
     public function index(Content $content)
     {
         return Admin::content(function (Content $content) {
-            $content->header('CMSYUN');
+            $content->header('CMSYUN ');
         });
     }
 }
