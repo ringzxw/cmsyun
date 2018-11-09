@@ -112,7 +112,7 @@ return [
         'providers' => [
             'admin' => [
                 'driver' => 'eloquent',
-                'model'  => Encore\Admin\Auth\Database\Administrator::class,
+                'model'  => App\Models\Employee::class,
             ],
         ],
     ],
@@ -152,8 +152,8 @@ return [
         'connection' => '',
 
         // User tables and model.
-        'users_table' => 'admin_users',
-        'users_model' => Encore\Admin\Auth\Database\Administrator::class,
+        'users_table' => 'employees',
+        'users_model' => App\Models\Employee::class,
 
         // Role table and model.
         'roles_table' => 'admin_roles',
@@ -334,7 +334,7 @@ return [
         ],
         'material-ui' => [
             // If the value is set to false, this extension will be disabled
-            'enable' => true
+            'enable' => false
         ],
     ],
 ];

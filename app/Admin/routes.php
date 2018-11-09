@@ -6,10 +6,12 @@ Admin::registerAuthRoutes();
 
 Route::group([
     'prefix'        => config('admin.route.prefix'),
-    'namespace'     => config('admin.route.namespace'),
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
 
-    $router->get('/', 'HomeController@index');
-
+    $router->get('/', 'App\Admin\Controllers\HomeController@index');
+    $router->resource('employee', \App\Admin\Controllers\Employee\EmployeeController::class);
+    $router->resource('project', \App\Admin\Controllers\Project\ProjectController::class);
+    $router->get('employee/{id}/permission', 'App\Admin\Controllers\Employee\EmployeePermissionController@index');
+    $router->post('api/employee-permission-setting', 'App\Admin\Controllers\Employee\EmployeePermissionController@apiSetting');
 });
