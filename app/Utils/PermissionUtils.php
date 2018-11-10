@@ -18,7 +18,7 @@ class PermissionUtils
         $configs = array();
 
         $configs[0]['key'] = '*';
-        $configs[0]['name'] = '全部';
+        $configs[0]['name'] = '超级管理员';
 
         $configs[1]['key'] = 'employee';
         $configs[1]['name'] = '员工管理';

@@ -38,7 +38,7 @@ return [
     'captcha'               => '验证码',
     'action'                => '操作',
     'title'                 => '标题',
-    'description'           => '简介',
+    'description'           => '',
     'back'                  => '返回',
     'back_to_list'          => '返回列表',
     'submit'                => '提交',

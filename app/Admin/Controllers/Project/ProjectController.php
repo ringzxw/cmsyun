@@ -2,9 +2,13 @@
 
 namespace App\Admin\Controllers\Project;
 
+use App\Admin\Extensions\Column\DeleteRow;
+use App\Admin\Extensions\Column\UrlRow;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
+use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
@@ -22,6 +26,7 @@ class ProjectController extends Controller
      */
     public function index(Content $content)
     {
+        Permission::check('project-'.__FUNCTION__);
         return $content
             ->header('项目列表')
             ->body($this->grid());
@@ -36,6 +41,7 @@ class ProjectController extends Controller
      */
     public function show($id, Content $content)
     {
+        Permission::check('project-'.__FUNCTION__);
         return $content
             ->header('项目详情')
             ->body($this->detail($id));
@@ -50,6 +56,7 @@ class ProjectController extends Controller
      */
     public function edit($id, Content $content)
     {
+        Permission::check('project-'.__FUNCTION__);
         return $content
             ->header('项目编辑')
             ->body($this->form()->edit($id));
@@ -63,6 +70,7 @@ class ProjectController extends Controller
      */
     public function create(Content $content)
     {
+        Permission::check('project-'.__FUNCTION__);
         return $content
             ->header('项目新增')
             ->description('description')
@@ -95,6 +103,21 @@ class ProjectController extends Controller
                 },'关键词','名称/地址');
             });
         });
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            $actions->disableDelete();
+            $actions->disableEdit();
+            $actions->disableView();
+            // 添加操作
+            if (Admin::user()->can('project-show')) {
+                $actions->append(new UrlRow(url('admin/project/'.$actions->getKey()),'详情'));
+            }
+            if (Admin::user()->can('project-edit')) {
+                $actions->append(new UrlRow(url('admin/project/'.$actions->getKey().'/edit'),'编辑'));
+            }
+            if (Admin::user()->can('project-delete')) {
+                $actions->append(new DeleteRow($actions->getKey(),'projects'));//删除
+            }
+        });
         $grid->disableRowSelector();
         return $grid;
     }
@@ -112,6 +135,15 @@ class ProjectController extends Controller
         $show->name('名称');
         $show->sort('排序');
         $show->address('地址');
+        $show->panel()
+            ->tools(function ($tools) {
+                if (!Admin::user()->can('project-edit')) {
+                    $tools->disableEdit();
+                }
+                if (!Admin::user()->can('project-delete')) {
+                    $tools->disableDelete();
+                }
+            });
         return $show;
     }
 

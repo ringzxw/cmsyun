@@ -2,13 +2,19 @@
 
 namespace App\Admin\Controllers\Employee;
 
-use App\Models\Employee;
+use App\Admin\Extensions\Column\DeleteRow;
+use App\Admin\Extensions\Column\UrlRow;
+use App\Admin\Extensions\Expoters\EmployeeExporter;
+use App\Exports\EmployeeExport;
 use App\Http\Controllers\Controller;
+use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends Controller
 {
@@ -21,6 +27,7 @@ class EmployeeController extends Controller
      */
     public function index(Content $content)
     {
+        Permission::check('employee-'.__FUNCTION__);
         return $content
             ->header('员工列表')
             ->body($this->grid()->render());
@@ -36,6 +43,7 @@ class EmployeeController extends Controller
      */
     public function show($id, Content $content)
     {
+        Permission::check('employee-'.__FUNCTION__);
         return $content
             ->header('员工详情')
             ->body($this->detail($id));
@@ -50,6 +58,7 @@ class EmployeeController extends Controller
      */
     public function edit($id, Content $content)
     {
+        Permission::check('employee-'.__FUNCTION__);
         return $content
             ->header('员工编辑')
             ->body($this->form()->edit($id));
@@ -62,6 +71,7 @@ class EmployeeController extends Controller
      */
     public function create(Content $content)
     {
+        Permission::check('employee-'.__FUNCTION__);
         return $content
             ->header('员工新建')
             ->body($this->form());
@@ -75,23 +85,42 @@ class EmployeeController extends Controller
     protected function grid()
     {
         $userModel = config('admin.database.users_model');
-
         $grid = new Grid(new $userModel());
-
         $grid->id('ID')->sortable();
         $grid->username(trans('admin.username'));
         $grid->name(trans('admin.name'));
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
         $grid->created_at(trans('admin.created_at'));
         $grid->updated_at(trans('admin.updated_at'));
-        $grid->actions(function (Grid\Displayers\Actions $actions) {
-            if ($actions->getKey() == 1) {
-                $actions->disableDelete();
-            }
-            // append一个操作
-            $url = url('admin/employee/'.$actions->getKey().'/permission');
-            $actions->append('<a href="'.$url.'">权限</a>');
+        $grid->filter(function($filter){
+            $filter->disableIdFilter();
+            $filter->column(1/3, function ($filter) {
+                $filter->where(function ($query) {
+                    $query->where('name', 'like', "%{$this->input}%")
+                        ->orWhere('mobile', 'like', "%{$this->input}%")
+                        ->orWhere('username', 'like', "%{$this->input}%");
+                },'关键词')->placeholder('用户名/姓名/手机号');
+            });
         });
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            $actions->disableDelete();
+            $actions->disableEdit();
+            $actions->disableView();
+            // 添加操作
+            if (Admin::user()->can('employee-edit')) {
+                $actions->append(new UrlRow(url('admin/employee/'.$actions->getKey().'/edit'),'编辑'));
+            }
+            if (Admin::user()->can('employee-permission')) {
+                $actions->append(new UrlRow(url('admin/employee/'.$actions->getKey().'/permission'),'权限'));
+            }
+            if (Admin::user()->can('employee-delete')) {
+                $actions->append(new DeleteRow($actions->getKey(),'employees'));//删除
+            }
+        });
+        $grid->tools(function ($tools) {
+            $tools->append(new EmployeeExporter());
+        });
+        $grid->disableExport();
         $grid->disableRowSelector();
         return $grid;
     }
@@ -163,5 +192,15 @@ class EmployeeController extends Controller
         });
 
         return $form;
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function apiEmployeeExport()
+    {
+        return Excel::download(new EmployeeExport(), 'employee.xlsx');
     }
 }

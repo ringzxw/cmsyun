@@ -8,9 +8,15 @@ trait ServicesTrait
 {
     public $permissionService;
 
-    public function __construct(PermissionService $permissionService)
+    public function __construct()
+    {
+
+    }
+
+    public function getPermissionService(PermissionService $permissionService)
     {
         $this->permissionService = $permissionService;
+        return $this->permissionService;
     }
 
 }

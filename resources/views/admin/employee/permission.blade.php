@@ -1,4 +1,25 @@
 <div class="row">
+    <div class="col-md-12">
+        <div class="box box-info">
+            <div class="box-header with-border">
+                <h3 class="box-title">详细</h3>
+                <div class="box-tools">
+                    <div class="btn-group pull-right" style="margin-right: 5px">
+                        <a class="btn btn-sm btn-success" title="保存">
+                            <i class="fa fa-edit"></i><span class="hidden-xs"> 保存</span>
+                        </a>
+                    </div>
+                    <div class="btn-group pull-right" style="margin-right: 5px">
+                        <a href="/admin/employee" class="btn btn-sm btn-default" title="列表">
+                            <i class="fa fa-list"></i><span class="hidden-xs"> 列表</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <!-- form start -->
+        </div>
+    </div>
 
 
    @foreach($permissionGroups as $permissionGroup)
@@ -6,17 +27,10 @@
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ $permissionGroup['name'] }}</h3>
-                    <div class="pull-right">
-                        <div class="btn-group pull-right" style="margin-right: 10px">
-                            <a class="btn btn-sm btn-success">
-                                <i class="fa fa-save"></i>&nbsp;&nbsp;保存设置
-                            </a>
-                        </div>
-                    </div>
                 </div><!-- /.box-header -->
                 <div class="box-body" style="display: block;" id="permission">
                     @foreach($permissionGroup['list'] as $permission)
-                        <div class="col-md-1"><input type="checkbox" @if(\Encore\Admin\Facades\Admin::user()->can($permission->slug)) checked @endif class="permission {{ $permission->is_all }}" name="permission" value="{{$permission->id}}"/>&nbsp;&nbsp;{{ $permission->name }}&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                        <div class="col-md-1"><input type="checkbox" @if($employee->can($permission->slug)) checked @endif class="permission {{ $permission->is_all }}" name="permission" value="{{$permission->id}}"/>&nbsp;&nbsp;{{ mb_substr($permission->name,2) }}&nbsp;&nbsp;&nbsp;&nbsp;</div>
                     @endforeach
                     <input type="hidden" name="permission[]">
                 </div><!-- /.box-body -->
@@ -65,7 +79,7 @@
                         data: {
                             _token:LA.token,
                             ids: ids,
-                            employee_id:"{{ $id }}",
+                            employee_id:"{{ $employee->id }}",
                         },
                         success: function (json) {
                             $.pjax.reload('#pjax-container');
