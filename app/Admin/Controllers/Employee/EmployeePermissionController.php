@@ -6,21 +6,24 @@ use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Services\PermissionService;
+use App\Traits\ServicesTrait;
 use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 
 class EmployeePermissionController extends Controller
 {
     use ApiResponse;
+    use ServicesTrait;
     /**
      * Index interface.
      *
      * @return Content
      */
-    public function index($id,Content $content,PermissionService $permissionService)
+    public function index($id,Content $content)
     {
-       $employee = Employee::find($id);
-       $permissionGroups = $permissionService->getPermissionGroup();
+        $employee = Employee::find($id);
+        $permissionGroups = $this->getPermissionService()->getPermissionGroup($employee);
+        $employee = Employee::find($id);
         return $content
             ->header('权限列表')
             ->body(view('admin.employee.permission',compact('permissionGroups','employee')));

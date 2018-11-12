@@ -8,9 +8,17 @@ use Encore\Admin\Auth\Database\Permission;
 class PermissionService
 {
 
-    public function getPermissionGroup()
+    public function getPermissionGroup(Employee $employee = null)
     {
         $permissions = Permission::all();
+        //更新个人权限
+        if($employee){
+            $employeePermissions = $employee->permissions;
+            if(count($employeePermissions) != count($permissions)){
+                //没有所有操作的权限
+                $employee->permissions()->detach(1);
+            }
+        }
         $permissionGroups = array();
         foreach ($permissions as $permission)
         {
@@ -28,26 +36,6 @@ class PermissionService
                     }
                 }
             }
-//
-//
-//
-//
-//            switch ($first)
-//            {
-//                case '*':
-//                    $permissionGroups[0]['name'] = '全部';
-//                    $permissionGroups[0]['list'][] = $permission;
-//                    $permission->is_all = 'all';
-//                    break;
-//                case 'employee':
-//                    $permissionGroups[1]['name'] = '员工管理';
-//                    $permissionGroups[1]['list'][] = $permission;
-//                    break;
-//                case 'project':
-//                    $permissionGroups[2]['name'] = '项目管理';
-//                    $permissionGroups[2]['list'][] = $permission;
-//                    break;
-//            }
         }
         return $permissionGroups;
     }

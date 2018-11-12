@@ -18,5 +18,5 @@ Route::group([
 
     $router->resource('project', \App\Admin\Controllers\Project\ProjectController::class);
 
-
+    $router->resource('customer', \App\Admin\Controllers\Customer\CustomerController::class);
 });

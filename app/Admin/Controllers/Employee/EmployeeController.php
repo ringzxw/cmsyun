@@ -194,10 +194,9 @@ class EmployeeController extends Controller
         return $form;
     }
 
+
     /**
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
      */
     public function apiEmployeeExport()
     {

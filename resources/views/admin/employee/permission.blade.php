@@ -51,7 +51,6 @@
             radioClass : 'iradio_square-blue',
             increaseArea : '20%'
         });
-        // $('.permission').iCheck({checkboxClass:'icheckbox_minimal-blue'});
     });
 
     $('.btn-success').unbind('click').click(function () {
