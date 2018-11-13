@@ -115,8 +115,14 @@ class PermissionsSeeder extends Seeder
                 'http_path'     => '',
             ],
             [
+                'name'          => '客户分配',
+                'slug'          => 'customer-allot',
+                'http_method'   => '',
+                'http_path'     => '',
+            ],
+            [
                 'name'          => '客户跟进',
-                'slug'          => 'customer-save-log',
+                'slug'          => 'customer-follow',
                 'http_method'   => '',
                 'http_path'     => '',
             ],

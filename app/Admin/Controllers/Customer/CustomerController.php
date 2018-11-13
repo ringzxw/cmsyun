@@ -2,9 +2,16 @@
 
 namespace App\Admin\Controllers\Customer;
 
+use App\Admin\Extensions\Column\CustomerDetailRow;
+use App\Admin\Extensions\Column\DeleteRow;
+use App\Admin\Extensions\Column\UrlRow;
+use App\Admin\Extensions\Htmls\CustomerDetailHtml;
+use App\Helpers\Api\ApiResponse;
 use App\Models\Customer;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use App\Utils\FormatUtil;
+use App\Utils\OptionUtil;
 use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
@@ -12,10 +19,12 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
     use HasResourceActions;
+    use ApiResponse;
 
     /**
      * Index interface.
@@ -38,12 +47,13 @@ class CustomerController extends Controller
      * @param Content $content
      * @return Content
      */
-    public function show($id, Content $content)
+    public function show($id)
     {
         Permission::check('customer-'.__FUNCTION__);
-        return $content
-            ->header('客户详情')
-            ->body($this->detail($id));
+        return Admin::content(function (Content $content) use ($id){
+            $html = new CustomerDetailHtml($id);
+            $content->body($html);
+        });
     }
 
     /**
@@ -83,15 +93,39 @@ class CustomerController extends Controller
     protected function grid()
     {
         $grid = new Grid(new Customer);
+        $grid->model()->withOnly('createUser', ['name']);
         $grid->id('ID');
         $grid->name('姓名');
         $grid->mobile('手机号');
-        $grid->labels('意向')->display(function ($labels){
-            return FormatUtil::getLabelHtml($labels);
+        $grid->labels_html('意向')->display(function ($labels_html){
+            return $labels_html;
         });
-        $grid->status('客户状态')->display(function ($status){
-            return FormatUtil::getCustomerStatusHtml($status);
+        $grid->status_html('状态')->display(function ($status_html){
+            return $status_html;
         });
+        $grid->column('创建人')->display(function (){
+            return $this->createUser?$this->createUser['name']:'';
+        });
+        $grid->actions(function (Grid\Displayers\Actions $actions) {
+            $actions->disableDelete();
+            $actions->disableEdit();
+            $actions->disableView();
+            // 添加操作
+            if (Admin::user()->can('customer-show')) {
+                $actions->append(new CustomerDetailRow($actions->getKey()));//详情
+            }
+            if (Admin::user()->can('customer-edit')) {
+                $actions->append(new UrlRow(url('admin/customer/'.$actions->getKey().'/edit'),'编辑'));
+            }
+            if (Admin::user()->can('customer-follow')) {
+            }
+            if (Admin::user()->can('customer-delete')) {
+                $actions->append(new DeleteRow($actions->getKey(),'customers'));//删除
+            }
+        });
+
+
+
         return $grid;
     }
 
@@ -133,6 +167,17 @@ class CustomerController extends Controller
                 return 'required|unique:customers';
             }
         });
+        $form->select('channel','客户来源')->options(OptionUtil::getChannelOption())->rules('required');
+        if (Admin::user()->can('customer-allot')) {
+            $form->select('employee_id', '所属员工')->options(function ($id) {
+                $employee = Employee::find($id);
+                if ($employee) {
+                    return [$employee->id => $employee->full_name];
+                }
+            })->ajax('/admin/api/employee');
+        }else{
+            $form->hidden('employee_id')->default(Admin::user()->id);
+        }
         //保存前回调
         $form->saving(function (Form $form) {
             if(!$form->model()->create_user_id){
@@ -140,5 +185,25 @@ class CustomerController extends Controller
             }
         });
         return $form;
+    }
+
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function apiDetail(Request $request)
+    {
+        try{
+            $id = $request->get('id');
+            $customer = Customer::findOrFail($id);
+            $customer->html = clearHtml(response(view('admin.customer.detail-pop',compact('customer')))->getContent());
+            if($customer){
+                return $this->success($customer);
+            }
+            return $this->message('客户错误','error');
+        }catch (\Exception $e){
+            return $this->message($e->getMessage(),'error');
+        }
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Utils\FormatUtil;
+
 class Customer extends BaseModel
 {
     /** 客户状态：待约访 */
@@ -42,6 +44,36 @@ class Customer extends BaseModel
     /** 意向等级：I */
     const LABEL_I = 100;
 
+    protected static function boot()
+    {
+        parent::boot();
+        // 监听模型创建事件，在写入数据库之后触发
+        static::created(function ($model) {
+            // 如果模型的 no 字段为空
+            if (!$model->detail) {
+                $detail = new CustomerDetail();
+                $detail->customer_id = $model->id;
+                $detail->save();
+            }
+        });
+    }
+
+    /**
+     * 追加到模型数组表单的访问器
+     *
+     * @var array
+     */
+    protected $appends = ['status_html','labels_html'];
+
+    public function getStatusHtmlAttribute()
+    {
+        return FormatUtil::getCustomerStatusHtml($this->status);
+    }
+
+    public function getLabelsHtmlAttribute()
+    {
+        return FormatUtil::getLabelHtml($this->labels);
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -58,4 +90,6 @@ class Customer extends BaseModel
     {
         return $this->hasOne(CustomerDetail::class);
     }
+
+
 }

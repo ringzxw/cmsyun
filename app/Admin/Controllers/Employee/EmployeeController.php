@@ -7,6 +7,7 @@ use App\Admin\Extensions\Column\UrlRow;
 use App\Admin\Extensions\Expoters\EmployeeExporter;
 use App\Exports\EmployeeExport;
 use App\Http\Controllers\Controller;
+use App\Models\Employee;
 use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
@@ -14,6 +15,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends Controller
@@ -201,5 +203,31 @@ class EmployeeController extends Controller
     public function apiEmployeeExport()
     {
         return Excel::download(new EmployeeExport(), 'employee.xlsx');
+    }
+
+
+    /**
+     * @param Request $request
+     * @param Employee $employee
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function apiIndex(Request $request, Employee $employee)
+    {
+        $search = $request->input('q');
+        $query = $employee::query();
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', '%'.$search.'%')
+                ->orWhere('mobile', 'like', '%' . $search . '%')
+                ->orWhere('username', 'like', '%' . $search . '%')
+                ->orWhereHas('roles', function ($q) use ($search){
+                    $q->where('name', 'like', '%'.$search.'%');
+                });
+        });
+        $result = $query->paginate();
+        // 把查询出来的结果重新组装成 Laravel-Admin 需要的格式
+        $result->setCollection($result->getCollection()->map(function (Employee $employee) {
+            return ['id' => $employee->id, 'text' => $employee->full_name];
+        }));
+        return $result;
     }
 }
