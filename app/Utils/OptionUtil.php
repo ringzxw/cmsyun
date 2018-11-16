@@ -5,6 +5,7 @@ use App\Models\Customer;
 use App\Models\CustomerSuccess;
 use App\Models\Employee;
 use App\Models\EmployeeBonus;
+use App\Models\EmployeeTeam;
 use App\Models\ExpressCompany;
 use App\Models\GoodCategory;
 use App\Models\Project;
@@ -20,6 +21,24 @@ use Illuminate\Support\Facades\Cache;
  */
 class OptionUtil
 {
+    /**
+     * 所有团队
+     * @return \Illuminate\Support\Collection
+     */
+    public static function getEmployeeTeamOption()
+    {
+        $cacheName = __FUNCTION__;
+        if(Cache::has($cacheName)){
+            return Cache::get($cacheName);
+        }else{
+            $options = EmployeeTeam::all()->pluck('name','id');
+            Cache::put($cacheName,$options,10);
+            return $options;
+        }
+    }
+
+
+
     /**
      * 是否
      * @return \Illuminate\Support\Collection

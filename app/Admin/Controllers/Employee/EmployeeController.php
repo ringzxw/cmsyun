@@ -2,10 +2,12 @@
 
 namespace App\Admin\Controllers\Employee;
 
+use App\Admin\Extensions\Column\AddTeamRow;
 use App\Admin\Extensions\Column\DeleteRow;
 use App\Admin\Extensions\Column\UrlRow;
 use App\Admin\Extensions\Expoters\EmployeeExporter;
 use App\Exports\EmployeeExport;
+use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use Encore\Admin\Auth\Permission;
@@ -21,6 +23,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class EmployeeController extends Controller
 {
     use HasResourceActions;
+    use ApiResponse;
 
     /**
      * Index interface.
@@ -91,7 +94,10 @@ class EmployeeController extends Controller
         $grid->id('ID')->sortable();
         $grid->username(trans('admin.username'));
         $grid->name(trans('admin.name'));
+        $grid->mobile('联系方式');
+        $grid->email('邮箱');
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
+        $grid->employeeTeam()->name('所属团队')->label('primary');
         $grid->created_at(trans('admin.created_at'));
         $grid->updated_at(trans('admin.updated_at'));
         $grid->filter(function($filter){
@@ -111,6 +117,9 @@ class EmployeeController extends Controller
             // 添加操作
             if (Admin::user()->can('employee-edit')) {
                 $actions->append(new UrlRow(url('admin/employee/'.$actions->getKey().'/edit'),'编辑'));
+            }
+            if (Admin::user()->can('employee-team')) {
+                $actions->append(new AddTeamRow($actions->getKey()));
             }
             if (Admin::user()->can('employee-permission')) {
                 $actions->append(new UrlRow(url('admin/employee/'.$actions->getKey().'/permission'),'权限'));
@@ -170,8 +179,45 @@ class EmployeeController extends Controller
 
         $form->display('id', 'ID');
 
-        $form->text('username', trans('admin.username'))->rules('required');
-        $form->text('name', trans('admin.name'))->rules('required');
+
+
+
+        $form->text('username', '账号')->rules(function($form) {
+            // 如果 $form->model()->id 不为空，代表是编辑操作
+            if ($id = $form->model()->id) {
+                return 'required|unique:employees,username,'.$id.',id';
+            } else {
+                return 'required|unique:employees';
+            }
+        });
+
+        $form->text('name', '姓名')->rules(function($form) {
+            // 如果 $form->model()->id 不为空，代表是编辑操作
+            if ($id = $form->model()->id) {
+                return 'required|unique:employees,name,'.$id.',id';
+            } else {
+                return 'required|unique:employees';
+            }
+        });
+
+        $form->mobile('mobile', '联系方式')->rules(function($form) {
+            // 如果 $form->model()->id 不为空，代表是编辑操作
+            if ($id = $form->model()->id) {
+                return 'required|unique:employees,mobile,'.$id.',id';
+            } else {
+                return 'required|unique:employees';
+            }
+        });
+
+        $form->email('email', '邮箱')->rules(function($form) {
+            // 如果 $form->model()->id 不为空，代表是编辑操作
+            if ($id = $form->model()->id) {
+                return 'required|unique:employees,email,'.$id.',id';
+            } else {
+                return 'required|unique:employees';
+            }
+        });
+
         $form->image('avatar', trans('admin.avatar'));
         $form->password('password', trans('admin.password'))->rules('required|confirmed');
         $form->password('password_confirmation', trans('admin.password_confirmation'))->rules('required')
@@ -229,5 +275,24 @@ class EmployeeController extends Controller
             return ['id' => $employee->id, 'text' => $employee->full_name];
         }));
         return $result;
+    }
+
+    /**
+     * @param Request $request
+     * @param Employee $employee
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function apiAddTeam(Request $request)
+    {
+        try{
+            $id = $request->input('id');
+            $employee_team_id = $request->input('employee_team_id');
+            $employee = Employee::findOrFail($id);
+            $employee->employee_team_id  = $employee_team_id;
+            $employee->save();
+            return $this->success($employee);
+        }catch (\Exception $e){
+            return $this->message($e->getMessage(),'error');
+        }
     }
 }

@@ -1,23 +1,28 @@
 <?php
 
-namespace App\Admin\Extensions\Tools;
+namespace App\Admin\Extensions\Column;
 
-use Encore\Admin\Grid\Tools\BatchAction;
+use Encore\Admin\Admin;
 
-class AddTeamPost extends BatchAction
+class AddTeamManagerRow
 {
+    protected $id;
     protected $team_id;
-    public function __construct($team_id)
+
+    public function __construct($id,$team_id)
     {
+        $this->id = $id;
         $this->team_id = $team_id;
     }
 
-    public function script()
+    protected function script()
     {
-        return <<<EOT
-$('{$this->getElementClass()}').on('click', function() {
+        return <<<SCRIPT
+$('.grid-row-add-manager').unbind('click').click(function() {
+    var id = $(this).data('id');
     swal({ 
-      title: '确认添加？', 
+      title: '确认设置操作？',
+      text:"设置此员工为团队管理员，团队中只会有一个管理员！", 
       type: 'warning',
       showCancelButton: true, 
       confirmButtonColor: '#3085d6',
@@ -28,12 +33,12 @@ $('{$this->getElementClass()}').on('click', function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/add-team',
+                    url: '/admin/api/employee-team-manager-setting',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        ids: selectedRows(),
-                        team_id: '{$this->team_id}',
+                        employee_id: id,
+                        employee_team_id: '{$this->team_id}',
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
@@ -45,12 +50,23 @@ $('{$this->getElementClass()}').on('click', function() {
                     }
                 });
             });
-      }, 
+        }, 
     }).then(function(){
       
     })
 });
+SCRIPT;
+    }
 
-EOT;
+    protected function render()
+    {
+        Admin::script($this->script());
+
+        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-add-manager'>设置管理员</a>";
+    }
+
+    public function __toString()
+    {
+        return $this->render();
     }
 }

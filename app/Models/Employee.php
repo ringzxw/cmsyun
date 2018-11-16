@@ -107,6 +107,14 @@ class Employee extends BaseModel implements AuthenticatableContract,JWTSubject
         return $this->belongsToMany($relatedModel, $pivotTable, 'user_id', 'permission_id');
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function employeeTeam()
+    {
+        return $this->belongsTo(EmployeeTeam::class);
+    }
+
     // Rest omitted for brevity
 
     public function getJWTIdentifier()

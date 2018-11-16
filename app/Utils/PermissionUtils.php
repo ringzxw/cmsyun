@@ -23,11 +23,14 @@ class PermissionUtils
         $configs[1]['key'] = 'employee';
         $configs[1]['name'] = '员工管理';
 
-        $configs[2]['key'] = 'project';
-        $configs[2]['name'] = '项目管理';
+        $configs[2]['key'] = 'team';
+        $configs[2]['name'] = '团队管理';
 
-        $configs[3]['key'] = 'customer';
-        $configs[3]['name'] = '客户管理';
+        $configs[3]['key'] = 'project';
+        $configs[3]['name'] = '项目管理';
+
+        $configs[4]['key'] = 'customer';
+        $configs[4]['name'] = '客户管理';
         return $configs;
     }
 

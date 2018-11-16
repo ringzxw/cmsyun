@@ -35,12 +35,12 @@ $('.grid-row-remove').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/remove-team',
+                    url: '/admin/api/employee-team-remove',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        ids: ids,
-                        team_id: '{$this->team_id}',
+                        employee_ids: ids,
+                        employee_team_id: '{$this->team_id}',
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');

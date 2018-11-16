@@ -55,6 +55,42 @@ class PermissionsSeeder extends Seeder
                 'http_path'     => '',
             ],
             [
+                'name'          => '员工团队设置',
+                'slug'          => 'employee-team',
+                'http_method'   => '',
+                'http_path'     => '',
+            ],
+            [
+                'name'          => '团队列表',
+                'slug'          => 'team-index',
+                'http_method'   => '',
+                'http_path'     => '',
+            ],
+            [
+                'name'          => '团队详情',
+                'slug'          => 'team-show',
+                'http_method'   => '',
+                'http_path'     => '',
+            ],
+            [
+                'name'          => '团队新增',
+                'slug'          => 'team-create',
+                'http_method'   => '',
+                'http_path'     => '',
+            ],
+            [
+                'name'          => '团队编辑',
+                'slug'          => 'team-edit',
+                'http_method'   => '',
+                'http_path'     => '',
+            ],
+            [
+                'name'          => '团队删除',
+                'slug'          => 'team-delete',
+                'http_method'   => '',
+                'http_path'     => '',
+            ],
+            [
                 'name'          => '项目列表',
                 'slug'          => 'project-index',
                 'http_method'   => '',

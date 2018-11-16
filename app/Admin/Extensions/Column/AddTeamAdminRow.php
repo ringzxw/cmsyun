@@ -33,12 +33,12 @@ $('.grid-row-add-admin').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/add-team-admin',
+                    url: '/admin/api/employee-team-admin-setting',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        id: id,
-                        team_id: '{$this->team_id}',
+                        employee_id: id,
+                        employee_team_id: '{$this->team_id}',
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');

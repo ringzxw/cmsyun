@@ -28,12 +28,12 @@ $('{$this->getElementClass()}').on('click', function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/remove-team',
+                    url: '/admin/api/employee-team-remove',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        ids: selectedRows(),
-                        team_id: '{$this->team_id}',
+                        employee_ids: selectedRows(),
+                        employee_team_id: '{$this->team_id}',
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
