@@ -20,7 +20,7 @@ use Encore\Admin\Show;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
-class EmployeeController extends Controller
+class EmployeeController extends CommonEmployeeController
 {
     use HasResourceActions;
     use ApiResponse;
@@ -91,15 +91,7 @@ class EmployeeController extends Controller
     {
         $userModel = config('admin.database.users_model');
         $grid = new Grid(new $userModel());
-        $grid->id('ID')->sortable();
-        $grid->username(trans('admin.username'));
-        $grid->name(trans('admin.name'));
-        $grid->mobile('联系方式');
-        $grid->email('邮箱');
-        $grid->roles(trans('admin.roles'))->pluck('name')->label();
-        $grid->employeeTeam()->name('所属团队')->label('primary');
-        $grid->created_at(trans('admin.created_at'));
-        $grid->updated_at(trans('admin.updated_at'));
+        $this->defaultGrid($grid);
         $grid->filter(function($filter){
             $filter->disableIdFilter();
             $filter->column(1/3, function ($filter) {
@@ -128,11 +120,9 @@ class EmployeeController extends Controller
                 $actions->append(new DeleteRow($actions->getKey(),'employees'));//删除
             }
         });
-        $grid->tools(function ($tools) {
+        $grid->tools(function (Grid\Tools $tools) {
             $tools->append(new EmployeeExporter());
         });
-        $grid->disableExport();
-        $grid->disableRowSelector();
         return $grid;
     }
 

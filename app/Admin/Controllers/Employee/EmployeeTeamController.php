@@ -2,16 +2,14 @@
 
 namespace App\Admin\Controllers\Employee;
 
-use App\Admin\Extensions\Column\AddTeamAdminRow;
 use App\Admin\Extensions\Column\AddTeamManagerRow;
+use App\Admin\Extensions\Column\AddTeamRow;
 use App\Admin\Extensions\Column\DeleteRow;
 use App\Admin\Extensions\Column\RemoveTeamRow;
 use App\Admin\Extensions\Column\UrlRow;
-use App\Admin\Extensions\Tools\RemoveTeamPost;
 use App\Helpers\Api\ApiResponse;
 use App\Models\Employee;
 use App\Models\EmployeeTeam;
-use App\Http\Controllers\Controller;
 use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
@@ -21,7 +19,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use Illuminate\Http\Request;
 
-class EmployeeTeamController extends Controller
+class EmployeeTeamController extends CommonEmployeeController
 {
     use HasResourceActions;
     use ApiResponse;
@@ -184,35 +182,25 @@ class EmployeeTeamController extends Controller
     protected function employeeListGrid($id)
     {
         return Admin::grid(Employee::class, function (Grid $grid) use($id){
-            $grid->model()->where('employee_team_id',$id);
-            $grid->id('ID')->sortable();
-            $grid->username(trans('admin.username'));
-            $grid->name(trans('admin.name'));
-            $grid->mobile('联系方式');
-            $grid->email('邮箱');
-            $grid->roles(trans('admin.roles'))->pluck('name')->label();
-            $grid->tools(function ($tools) use($id){
-                $tools->batch(function ($batch) use($id){
-                    $batch->disableDelete();
-                    $batch->add('移除', new RemoveTeamPost($id));
-                });
-            });
-            $grid->actions(function ($actions) use($id){
+            $this->defaultGrid($grid);
+            $grid->disableCreateButton();
+            $grid->actions(function (Grid\Displayers\Actions $actions) use($id){
                 $actions->disableDelete();
                 $actions->disableEdit();
                 $actions->disableView();
+                $employee = $actions->row;
+                if ($employee->employee_team_id == null && Admin::user()->can('employee-team')) {
+                    $actions->append(new AddTeamRow($actions->getKey()));
+                }
                 // 添加操作
-                if (Admin::user()->can('team-edit')) {
+                if ($employee->employee_team_id == $id && Admin::user()->can('team-edit')) {
                     $actions->append(new AddTeamManagerRow($actions->getKey(),$id));
                 }
 
-                if (Admin::user()->can('employee-team')) {
+                if ($employee->employee_team_id == $id && Admin::user()->can('employee-team')) {
                     $actions->append(new RemoveTeamRow($actions->getKey(),$id));
                 }
-
             });
-            $grid->disableCreateButton();
-            $grid->disableExport();
         });
     }
 
