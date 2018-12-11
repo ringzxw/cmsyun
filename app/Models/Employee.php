@@ -23,7 +23,8 @@ class Employee extends BaseModel implements AuthenticatableContract,JWTSubject
      */
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['username', 'password', 'name', 'avatar'];
+    protected $fillable = ['username', 'password', 'name', 'avatar',
+        'weixin_session_key', 'weapp_openid',];
 
     /**
      * Create a new Eloquent model instance.

@@ -188,6 +188,7 @@ class EmployeeTeamController extends CommonEmployeeController
                 $actions->disableDelete();
                 $actions->disableEdit();
                 $actions->disableView();
+                /** @var Employee $employee */
                 $employee = $actions->row;
                 if ($employee->employee_team_id == null && Admin::user()->can('employee-team')) {
                     $actions->append(new AddTeamRow($actions->getKey()));
