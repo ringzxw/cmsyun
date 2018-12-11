@@ -43,9 +43,17 @@ $api->version('v1', [
             // 当前登录用户信息
             $api->post('employee', 'EmployeesController@show')
                 ->name('api.employee.show');
-            // 修改登录密码
-            $api->post('employee/update', 'EmployeesController@update')
+            // 编辑登录用户信息
+            $api->patch('employee', 'EmployeesController@update')
+                ->name('api.employee.patch');
+            $api->put('employee', 'EmployeesController@update')
                 ->name('api.employee.update');
+            // 修改头像
+            $api->post('employee/avatar-store', 'EmployeesController@avatarStore')
+                ->name('api.employee.avatarStore');
+            // 修改登录密码
+            $api->post('employee/change-password', 'EmployeesController@changePassword')
+                ->name('api.employee.changePassword');
         });
     });
 });

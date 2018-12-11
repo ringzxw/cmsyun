@@ -2,31 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\Base;
-use App\Models\Customer;
-use App\Models\CustomerLog;
-use App\Models\Employee;
-use App\Models\EmployeeBonus;
-use App\Models\EmployeeInvoice;
-use App\Models\EmployeeLeave;
-use App\Models\EmployeeRemind;
-use App\Models\EmployeeTask;
-use App\Services\CustomerService;
-use App\Services\EmployeeService;
-use App\Transformers\EmployeeBonusDetailTransformer;
-use App\Transformers\EmployeeBonusTransformer;
-use App\Transformers\EmployeeInvoiceDetailTransformer;
-use App\Transformers\EmployeeInvoiceTransformer;
-use App\Transformers\EmployeeLeaveDetailTransformer;
-use App\Transformers\EmployeeLeaveTransformer;
-use App\Transformers\EmployeeRemindTransformer;
-use App\Transformers\EmployeeTaskDetailTransformer;
-use App\Transformers\EmployeeTaskTransformer;
+use App\Handlers\ImageUploadHandler;
+use App\Http\Requests\Api\EmployeeRequest;
+use App\Http\Requests\Api\ImageRequest;
 use App\Transformers\EmployeeTransformer;
-use App\Utils\CustomerUtil;
-use App\Utils\DateUtil;
-use App\Utils\OptionUtil;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class EmployeesController extends Controller
@@ -44,17 +23,16 @@ class EmployeesController extends Controller
             ]);
     }
 
-    /**
-     * 修改个人信息
-     */
-    public function update(Request $request)
+
+    public function update(EmployeeRequest $request)
     {
-        return $this->response->error('输入有误');
+        $user = $this->user();
+        $attributes = $request->only(['name', 'email']);
+        $user->update($attributes);
+        return $this->response->item($user, new EmployeeTransformer());
     }
 
-    /**
-     * 修改登录密码
-     */
+
     public function changePassword(Request $request)
     {
         if($request->password && $request->password == $request->password_confirmation){
@@ -63,5 +41,15 @@ class EmployeesController extends Controller
             return $this->response->item($this->user(), new EmployeeTransformer())->setStatusCode(201);
         }
         return $this->response->error('密码输入有误');
+    }
+
+    public function avatarStore(ImageRequest $request, ImageUploadHandler $uploader)
+    {
+        $user = $this->user();
+        $size = $request->type == 'avatar' ? 362 : 1024;
+        $result = $uploader->save($request->image, str_plural($request->type), $user->id, $size);
+        $user->avatar = $result['path'];
+        $user->save();
+        return $this->response->item($user, new EmployeeTransformer())->setStatusCode(201);
     }
 }
