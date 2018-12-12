@@ -2,8 +2,9 @@
 
 namespace App\Traits;
 
-use App\Services\ModelService;
+use App\Models\Employee;
 use App\Services\PermissionService;
+use App\Services\QueryService;
 
 trait ServicesTrait
 {
@@ -11,21 +12,23 @@ trait ServicesTrait
     /**
      * @return \Illuminate\Foundation\Application|mixed|permissionService
      */
-    public function getPermissionService()
+    public function getPermissionService(Employee $employee = null)
     {
-        /** @var PermissionService $permissionService */
-        $permissionService = app('permissionService');
-        return $permissionService;
+        /** @var PermissionService $service */
+        $service = app('permissionService');
+        $service->init($employee);
+        return $service;
     }
 
 
     /**
-     * @return \Illuminate\Foundation\Application|mixed|modelService
+     * @return \Illuminate\Foundation\Application|mixed|queryService
      */
-    public function getModelService()
+    public function getQueryService(Employee $employee = null)
     {
-        /** @var ModelService $modelService */
-        $modelService = app('modelService');
-        return $modelService;
+        /** @var QueryService $service */
+        $service = app('queryService');
+        $service->init($employee);
+        return $service;
     }
 }

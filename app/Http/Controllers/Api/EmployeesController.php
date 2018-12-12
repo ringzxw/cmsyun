@@ -40,7 +40,7 @@ class EmployeesController extends Controller
             $this->user()->save();
             return $this->response->item($this->user(), new EmployeeTransformer())->setStatusCode(201);
         }
-        return $this->response->error('密码输入有误');
+        return $this->response->errorUnauthorized('密码输入有误');
     }
 
     public function avatarStore(ImageRequest $request, ImageUploadHandler $uploader)

@@ -49,11 +49,16 @@ $api->version('v1', [
             $api->put('employee', 'EmployeesController@update')
                 ->name('api.employee.update');
             // 修改头像
-            $api->post('employee/avatar-store', 'EmployeesController@avatarStore')
+            $api->post('employee/images', 'EmployeesController@avatarStore')
                 ->name('api.employee.avatarStore');
             // 修改登录密码
             $api->post('employee/change-password', 'EmployeesController@changePassword')
                 ->name('api.employee.changePassword');
+
+            // 客户列表
+            $api->post('customer', 'CustomersController@list')
+                ->name('api.customer.list');
+
         });
     });
 });

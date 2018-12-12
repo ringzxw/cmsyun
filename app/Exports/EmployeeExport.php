@@ -2,7 +2,9 @@
 
 namespace App\Exports;
 
+use App\Models\Employee;
 use App\Traits\ServicesTrait;
+use Encore\Admin\Facades\Admin;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 
@@ -12,8 +14,10 @@ class EmployeeExport implements FromView
 
     public function view(): View
     {
+        /** @var Employee $employee */
+        $employee = Admin::user();
         return view('admin.employee.list', [
-            'employees' => $this->getModelService()->getEmployeeListQuery()
+            'employees' => $this->getQueryService($employee)->getEmployeeListExportQuery()
         ]);
     }
 }

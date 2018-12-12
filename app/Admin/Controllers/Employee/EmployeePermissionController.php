@@ -22,7 +22,7 @@ class EmployeePermissionController extends Controller
     public function index($id,Content $content)
     {
         $employee = Employee::find($id);
-        $permissionGroups = $this->getPermissionService()->getPermissionGroup($employee);
+        $permissionGroups = $this->getPermissionService($employee)->getPermissionGroup();
         $employee = Employee::find($id);
         return $content
             ->header('权限列表')

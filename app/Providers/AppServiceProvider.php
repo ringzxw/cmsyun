@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Services\ModelService;
 use App\Services\PermissionService;
+use App\Services\QueryService;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,8 +34,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('permissionService', function () {
             return new PermissionService();
         });
-        $this->app->bind('modelService', function () {
-            return new ModelService();
+        $this->app->bind('queryService', function () {
+            return new QueryService();
         });
     }
 }

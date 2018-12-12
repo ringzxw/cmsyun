@@ -123,9 +123,6 @@ class CustomerController extends Controller
                 $actions->append(new DeleteRow($actions->getKey(),'customers'));//删除
             }
         });
-
-
-
         return $grid;
     }
 

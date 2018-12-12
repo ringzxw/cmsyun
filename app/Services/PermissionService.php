@@ -5,18 +5,18 @@ use App\Models\Employee;
 use App\Utils\PermissionUtils;
 use Encore\Admin\Auth\Database\Permission;
 
-class PermissionService
+class PermissionService extends BaseService
 {
 
-    public function getPermissionGroup(Employee $employee = null)
+    public function getPermissionGroup()
     {
         $permissions = Permission::all();
         //更新个人权限
-        if($employee){
-            $employeePermissions = $employee->permissions;
+        if($this->employee){
+            $employeePermissions = $this->employee->permissions;
             if(count($employeePermissions) != count($permissions)){
                 //没有所有操作的权限
-                $employee->permissions()->detach(1);
+                $this->employee->permissions()->detach(1);
             }
         }
         $permissionGroups = array();
@@ -52,5 +52,20 @@ class PermissionService
     public function getAllPermissionOption()
     {
         return Permission::all()->pluck('id','name');
+    }
+
+    public function check($permission)
+    {
+        $employee = $this->employee;
+        if (is_array($permission)) {
+            collect($permission)->each(function ($permission) use ($employee){
+                call_user_func_array([$this, 'check'], [$employee,$permission]);
+            });
+            return true;
+        }
+        if ($employee->cannot($permission)) {
+            return false;
+        }
+        return true;
     }
 }
