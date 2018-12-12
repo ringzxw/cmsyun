@@ -4,6 +4,7 @@ namespace App\Services;
 use App\Exceptions\PermissionException;
 use App\Models\Customer;
 use App\Models\Employee;
+use App\Models\EmployeeTeam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -44,10 +45,25 @@ class QueryService extends BaseService
      */
     public function getCustomerListQuery(Request $request)
     {
+        $permissionService = $this->getPermissionService($this->employee);
         $query = Customer::query();
-        $checked = $this->getPermissionService($this->employee)->check('customer-index');
-        if(!$checked){
+        if(!$permissionService->check('customer-index')){
             throw new PermissionException('没有查看客户权限');
+        }
+        if($permissionService->check('view-customer-all')){
+
+        }elseif ($permissionService->check('view-customer-team')){
+            //找到自己的团队
+            +
+            $employeeTeam = $this->employee->employeeTeam;
+            if($employeeTeam instanceof EmployeeTeam){
+                $employeeIds = $employeeTeam->employees->pluck('id');
+                $query->whereIn('id',$employeeIds);
+            }
+        }elseif ($permissionService->check('view-customer-me')){
+            $query->where('id',$this->employee->id);
+        }else{
+            throw new PermissionException('请先设置客户查看权限');
         }
         return $query;
     }

@@ -3,14 +3,17 @@
 namespace App\Traits;
 
 use App\Models\Employee;
+use App\Services\EmployeeService;
 use App\Services\PermissionService;
 use App\Services\QueryService;
 
 trait ServicesTrait
 {
 
+
     /**
-     * @return \Illuminate\Foundation\Application|mixed|permissionService
+     * @param Employee|null $employee
+     * @return PermissionService
      */
     public function getPermissionService(Employee $employee = null)
     {
@@ -22,12 +25,25 @@ trait ServicesTrait
 
 
     /**
+     * @param Employee|null $employee
      * @return \Illuminate\Foundation\Application|mixed|queryService
      */
     public function getQueryService(Employee $employee = null)
     {
         /** @var QueryService $service */
         $service = app('queryService');
+        $service->init($employee);
+        return $service;
+    }
+
+    /**
+     * @param Employee|null $employee
+     * @return \Illuminate\Foundation\Application|mixed|employeeService
+     */
+    public function getEmployeeService(Employee $employee = null)
+    {
+        /** @var EmployeeService $service */
+        $service = app('employeeService');
         $service->init($employee);
         return $service;
     }

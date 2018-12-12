@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\EmployeeService;
 use App\Services\PermissionService;
 use App\Services\QueryService;
 use Illuminate\Support\Facades\Schema;
@@ -36,6 +37,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind('queryService', function () {
             return new QueryService();
+        });
+        $this->app->bind('employeeService', function () {
+            return new EmployeeService();
         });
     }
 }

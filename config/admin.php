@@ -160,8 +160,8 @@ return [
         'roles_model' => Encore\Admin\Auth\Database\Role::class,
 
         // Permission table and model.
-        'permissions_table' => 'admin_permissions',
-        'permissions_model' => Encore\Admin\Auth\Database\Permission::class,
+        'permissions_table' => 'permissions',
+        'permissions_model' => App\Models\Permission::class,
 
         // Menu table and model.
         'menu_table' => 'admin_menu',

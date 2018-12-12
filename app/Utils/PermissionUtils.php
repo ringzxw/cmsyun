@@ -31,6 +31,9 @@ class PermissionUtils
 
         $configs[4]['key'] = 'customer';
         $configs[4]['name'] = '客户管理';
+
+        $configs[5]['key'] = 'view';
+        $configs[5]['name'] = '客户查看权限管理';
         return $configs;
     }
 

@@ -182,7 +182,14 @@ class EmployeeTeamController extends CommonEmployeeController
     protected function employeeListGrid($id)
     {
         return Admin::grid(Employee::class, function (Grid $grid) use($id){
+            $grid->model()->where('employee_team_id',$id);
             $this->defaultGrid($grid);
+            $grid->employeeTeam()->manager_id('管理员')->display(function ($manager_id){
+                if($manager_id == $this->id){
+                    return '是';
+                }
+                return '否';
+            });
             $grid->disableCreateButton();
             $grid->actions(function (Grid\Displayers\Actions $actions) use($id){
                 $actions->disableDelete();

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 class BaseService
 {
     use ServicesTrait;
+    /** @var Employee $employee */
     protected $employee;
 
     public function init(Employee $employee = null)
