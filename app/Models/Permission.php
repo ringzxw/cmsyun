@@ -163,8 +163,24 @@ class Permission extends Model
     {
         parent::boot();
 
+        static::creating(function ($model) {
+            $model->id = static::getID($model->slug);
+        });
+
         static::deleting(function ($model) {
             $model->roles()->detach();
         });
+    }
+
+    public static function getID($str)
+    {
+        $id = '';
+        if($str){
+            $id = number_format(hexdec(md5($str)),0,'','');
+            if(strlen($id) > 18){
+                $id = substr($id,0,18);
+            }
+        }
+        return $id;
     }
 }

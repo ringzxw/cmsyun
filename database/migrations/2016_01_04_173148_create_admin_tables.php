@@ -61,14 +61,14 @@ class CreateAdminTables extends Migration
 
         Schema::connection($connection)->create(config('admin.database.role_permissions_table'), function (Blueprint $table) {
             $table->integer('role_id');
-            $table->integer('permission_id');
+            $table->bigInteger('permission_id');
             $table->index(['role_id', 'permission_id']);
             $table->timestamps();
         });
 
         Schema::connection($connection)->create(config('admin.database.user_permissions_table'), function (Blueprint $table) {
             $table->integer('user_id');
-            $table->integer('permission_id');
+            $table->bigInteger('permission_id');
             $table->index(['user_id', 'permission_id']);
             $table->timestamps();
         });

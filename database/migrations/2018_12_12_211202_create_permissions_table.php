@@ -14,7 +14,7 @@ class CreatePermissionsTable extends Migration
     public function up()
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->integer('permission_group_id')->index()->comment('权限组ID');
             $table->string('name', 50)->comment('权限名称');
             $table->string('slug', 50)->unique()->comment('权限标记');
