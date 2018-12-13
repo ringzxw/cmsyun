@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Exceptions\PermissionException;
-use App\Traits\ServicesTrait;
+use App\Services\Traits\ServicesTrait;
 use App\Transformers\CustomerListTransformer;
 use Illuminate\Http\Request;
 

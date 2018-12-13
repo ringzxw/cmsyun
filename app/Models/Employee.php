@@ -116,6 +116,14 @@ class Employee extends BaseModel implements AuthenticatableContract,JWTSubject
         return $this->belongsTo(EmployeeTeam::class);
     }
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     */
+    public function employeeMessages()
+    {
+        return $this->hasMany(EmployeeMessage::class);
+    }
+
     // Rest omitted for brevity
 
     public function getJWTIdentifier()

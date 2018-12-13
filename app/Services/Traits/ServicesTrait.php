@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Traits;
+namespace App\Services\Traits;
 
 use App\Models\Employee;
 use App\Services\EmployeeService;
+use App\Services\MessageService;
 use App\Services\PermissionService;
 use App\Services\QueryService;
 
@@ -44,6 +45,18 @@ trait ServicesTrait
     {
         /** @var EmployeeService $service */
         $service = app('employeeService');
+        $service->init($employee);
+        return $service;
+    }
+
+    /**
+     * @param Employee|null $employee
+     * @return \Illuminate\Foundation\Application|mixed|messageService
+     */
+    public function getMessageService(Employee $employee = null)
+    {
+        /** @var MessageService $service */
+        $service = app('messageService');
         $service->init($employee);
         return $service;
     }

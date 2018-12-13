@@ -6,7 +6,7 @@ use App\Helpers\Api\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Services\PermissionService;
-use App\Traits\ServicesTrait;
+use App\Services\Traits\ServicesTrait;
 use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 

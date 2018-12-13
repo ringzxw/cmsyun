@@ -3,7 +3,7 @@ namespace App\Services;
 
 use App\Models\Customer;
 use App\Models\Employee;
-use App\Traits\ServicesTrait;
+use App\Services\Traits\ServicesTrait;
 use Encore\Admin\Auth\Permission;
 use Encore\Admin\Facades\Admin;
 use Illuminate\Http\Request;
