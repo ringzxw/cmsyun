@@ -199,7 +199,7 @@ class PermissionsSeeder extends Seeder
 
             [
                 'name'          => '客户权限管理',
-                'title'         => '',
+                'title'         => '所有>下属>自己，系统自动选择最大的权限！',
                 'permission'    => [
                     [
                         'name'          => '查看所有',

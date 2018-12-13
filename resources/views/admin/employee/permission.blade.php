@@ -23,14 +23,15 @@
 
 
    @foreach($permissionGroups as $permissionGroup)
-        <div>
+        <div class="col-md-12">
             <div class="box">
                 <div class="box-header with-border">
                     <h3 class="box-title">{{ $permissionGroup->name }}</h3>
+                    <span style="color: red;margin-left: 50px;">{{ $permissionGroup->title }}</span>
                 </div><!-- /.box-header -->
                 <div class="box-body" style="display: block;" id="permission">
                     @foreach($permissionGroup->permissions as $permission)
-                        <div class="col-md-1 col-sm-2" style="margin-bottom: 20px;"><input type="checkbox" @if($employee->can($permission->slug)) checked @endif class="permission {{ $permission->all }}" name="permission" value="{{$permission->id}}"/><span style="margin-left: 5px;">{{ $permission->name }}</span></div>
+                        <div class="col-md-1 col-sm-2" style="margin-bottom: 20px;"><input type="checkbox" @if($employee->can($permission->slug)) checked @endif class="permission {{ $permission->all }}" name="permission" value="{{$permission->id}}"/><span style="margin-left: 5px;" title="{{ $permission->slug }}">{{ $permission->name }}</span></div>
                     @endforeach
                     <input type="hidden" name="permission[]">
                 </div><!-- /.box-body -->
