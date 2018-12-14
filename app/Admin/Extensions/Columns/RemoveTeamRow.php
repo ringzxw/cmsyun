@@ -1,31 +1,30 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
-use App\Models\Base;
 use Encore\Admin\Admin;
 
-class CloseCustomerImportRow
+class RemoveTeamRow
 {
     protected $id;
-    protected $is_close;
+    protected $team_id;
 
-    public function __construct($id,$is_close)
+    public function __construct($id,$team_id)
     {
         $this->id = $id;
-        $this->is_close = $is_close;
+        $this->team_id = $team_id;
     }
 
     protected function script()
     {
         return <<<SCRIPT
-$('.grid-row-close').unbind('click').click(function() {
+$('.grid-row-remove').unbind('click').click(function() {
     var ids = [];
     var id = $(this).data('id');
-    var close = $(this).data('close');
     ids.push(id);
     swal({ 
-      title: '确认关闭？', 
+      title: "确认移除操作?",
+      text:"从团队中移除，请先确认后再执行！",
       type: 'warning',
       showCancelButton: true, 
       confirmButtonColor: '#3085d6',
@@ -36,12 +35,12 @@ $('.grid-row-close').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/close-customer-import',
+                    url: '/admin/api/employee-team-remove',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        ids: ids,
-                        is_close:close,
+                        employee_ids: ids,
+                        employee_team_id: '{$this->team_id}',
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
@@ -64,8 +63,8 @@ SCRIPT;
     protected function render()
     {
         Admin::script($this->script());
-        $name = $this->is_close==Base::CLOSE_TRUE?'关闭':'恢复';
-        return "<a href='javascript:void(0);' data-id='{$this->id}' data-close='{$this->is_close}' class='grid-row-close'>{$name}</a>";
+
+        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-remove' style='margin-left: 10px;'>移除</a>";
     }
 
     public function __toString()

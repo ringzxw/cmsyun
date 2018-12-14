@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class EmployeeTeam extends Model
 {
+    protected $guarded = [];
     /**
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */

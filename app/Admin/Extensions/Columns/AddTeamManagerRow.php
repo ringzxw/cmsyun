@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
 use Encore\Admin\Admin;
 
-class AddTeamAdminRow
+class AddTeamManagerRow
 {
     protected $id;
     protected $team_id;
@@ -18,7 +18,7 @@ class AddTeamAdminRow
     protected function script()
     {
         return <<<SCRIPT
-$('.grid-row-add-admin').unbind('click').click(function() {
+$('.grid-row-add-manager').unbind('click').click(function() {
     var id = $(this).data('id');
     swal({ 
       title: '确认设置操作？',
@@ -33,7 +33,7 @@ $('.grid-row-add-admin').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/employee-team-admin-setting',
+                    url: '/admin/api/employee-team-manager-setting',
                     dataType: "json",
                     data: {
                         _token:LA.token,
@@ -62,7 +62,7 @@ SCRIPT;
     {
         Admin::script($this->script());
 
-        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-add-admin'>设置管理员</a>";
+        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-add-manager'>设置管理员</a>";
     }
 
     public function __toString()

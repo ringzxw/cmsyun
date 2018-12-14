@@ -2,8 +2,8 @@
 
 namespace App\Admin\Controllers\Project;
 
-use App\Admin\Extensions\Column\DeleteRow;
-use App\Admin\Extensions\Column\UrlRow;
+use App\Admin\Extensions\Columns\DeleteRow;
+use App\Admin\Extensions\Columns\UrlRow;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Auth\Permission;

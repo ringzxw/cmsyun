@@ -6,6 +6,7 @@ use App\Utils\FormatUtil;
 
 class Customer extends BaseModel
 {
+    protected $guarded = [];
     /** 客户状态：待约访 */
     const STATUS_WAIT_MEET = -2;
     /** 客户状态：待分配 */

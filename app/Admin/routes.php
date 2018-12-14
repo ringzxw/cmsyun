@@ -14,6 +14,8 @@ Route::group([
     $router->resource('employee', \App\Admin\Controllers\Employee\EmployeeController::class);
     $router->get('api/employee', 'App\Admin\Controllers\Employee\EmployeeController@apiIndex');
     $router->get('api/employee-export', 'App\Admin\Controllers\Employee\EmployeeController@apiEmployeeExport');
+    $router->get('employee-import', 'App\Admin\Controllers\Employee\EmployeeController@importCreate');
+    $router->post('employee-import', 'App\Admin\Controllers\Employee\EmployeeController@importStore');
     $router->post('api/employee-add-team', 'App\Admin\Controllers\Employee\EmployeeController@apiAddTeam');
     $router->get('employee/{id}/permission', 'App\Admin\Controllers\Employee\EmployeePermissionController@index');
     $router->post('api/employee-permission-setting', 'App\Admin\Controllers\Employee\EmployeePermissionController@apiSetting');

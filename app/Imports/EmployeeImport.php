@@ -2,20 +2,12 @@
 
 namespace App\Imports;
 
-use App\Models\Employee;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\ToArray;
 
-class EmployeeImport implements ToModel
+class EmployeeImport implements ToArray
 {
-    /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
-    public function model(array $row)
+    public function Array(Array $tables)
     {
-        return new Employee([
-            //
-        ]);
+        return $tables;
     }
 }

@@ -1,38 +1,27 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
 use Encore\Admin\Admin;
 
-class DeleteRow
+class DeleteRemindRow
 {
     protected $id;
-    protected $table;
-    protected $name;
 
-    public function __construct($id,$table,$name = null)
+    public function __construct($id)
     {
         $this->id = $id;
-        $this->table = $table;
-        if($name){
-            $this->name = $name;
-        }else{
-            $this->name = '删除';
-        }
-
     }
 
     protected function script()
     {
         return <<<SCRIPT
-
-$('.grid-row-delete').unbind('click').click(function() {
-
+$('.grid-row-remove').unbind('click').click(function() {
+    var ids = [];
     var id = $(this).data('id');
-    var table = $(this).data('table');
+    ids.push(id);
     swal({ 
       title: '确认此操作？',
-      text:"从列表中移除，点确定后删除！", 
       type: 'warning',
       showCancelButton: true, 
       confirmButtonColor: '#3085d6',
@@ -43,12 +32,11 @@ $('.grid-row-delete').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/del-model',
+                    url: '/admin/api/delete-remind',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        id: id,
-                        table: table,
+                        ids: ids,
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
@@ -65,16 +53,13 @@ $('.grid-row-delete').unbind('click').click(function() {
       
     })
 });
-
-
 SCRIPT;
     }
 
     protected function render()
     {
         Admin::script($this->script());
-
-        return "<a href='javascript:void(0);' data-id='{$this->id}' data-table='{$this->table}' class='grid-row-delete' style='margin-right: 5px;'>{$this->name}</a>";
+        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-remove'>已读</a>";
     }
 
     public function __toString()

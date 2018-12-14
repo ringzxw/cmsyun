@@ -1,30 +1,38 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
 use Encore\Admin\Admin;
 
-class ResetCustomerRow
+class DeleteRow
 {
     protected $id;
-    protected $field;
+    protected $table;
+    protected $name;
 
-    public function __construct($id,$field)
+    public function __construct($id,$table,$name = null)
     {
         $this->id = $id;
-        $this->field = $field;
+        $this->table = $table;
+        if($name){
+            $this->name = $name;
+        }else{
+            $this->name = '删除';
+        }
+
     }
 
     protected function script()
     {
         return <<<SCRIPT
-$('.grid-row-reset').unbind('click').click(function() {
-    var ids = [];
+
+$('.grid-row-delete').unbind('click').click(function() {
+
     var id = $(this).data('id');
-    ids.push(id);
+    var table = $(this).data('table');
     swal({ 
-      title: '确认重置？',
-      text:"重置后进入客户池，客户列表中的客户不做任何改动！", 
+      title: '确认此操作？',
+      text:"从列表中移除，点确定后删除！", 
       type: 'warning',
       showCancelButton: true, 
       confirmButtonColor: '#3085d6',
@@ -35,12 +43,12 @@ $('.grid-row-reset').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/reset-customer',
+                    url: '/admin/api/del-model',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        ids: ids,
-                        field:'{$this->field}',
+                        id: id,
+                        table: table,
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
@@ -57,13 +65,16 @@ $('.grid-row-reset').unbind('click').click(function() {
       
     })
 });
+
+
 SCRIPT;
     }
 
     protected function render()
     {
         Admin::script($this->script());
-        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-reset' style='margin-right: 5px;'>重置</a>";
+
+        return "<a href='javascript:void(0);' data-id='{$this->id}' data-table='{$this->table}' class='grid-row-delete' style='margin-right: 5px;'>{$this->name}</a>";
     }
 
     public function __toString()

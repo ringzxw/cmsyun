@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Admin\Extensions\Nav;
+namespace App\Admin\Extensions\Navs;
 
 use App\Services\CustomerService;
 use App\Services\EmployeeBonusService;

@@ -1,30 +1,30 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
 use Encore\Admin\Admin;
 
-class RemoveTeamRow
+class ResetCustomerRow
 {
     protected $id;
-    protected $team_id;
+    protected $field;
 
-    public function __construct($id,$team_id)
+    public function __construct($id,$field)
     {
         $this->id = $id;
-        $this->team_id = $team_id;
+        $this->field = $field;
     }
 
     protected function script()
     {
         return <<<SCRIPT
-$('.grid-row-remove').unbind('click').click(function() {
+$('.grid-row-reset').unbind('click').click(function() {
     var ids = [];
     var id = $(this).data('id');
     ids.push(id);
     swal({ 
-      title: "确认移除操作?",
-      text:"从团队中移除，请先确认后再执行！",
+      title: '确认重置？',
+      text:"重置后进入客户池，客户列表中的客户不做任何改动！", 
       type: 'warning',
       showCancelButton: true, 
       confirmButtonColor: '#3085d6',
@@ -35,12 +35,12 @@ $('.grid-row-remove').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/employee-team-remove',
+                    url: '/admin/api/reset-customer',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        employee_ids: ids,
-                        employee_team_id: '{$this->team_id}',
+                        ids: ids,
+                        field:'{$this->field}',
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
@@ -63,8 +63,7 @@ SCRIPT;
     protected function render()
     {
         Admin::script($this->script());
-
-        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-remove' style='margin-left: 10px;'>移除</a>";
+        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-reset' style='margin-right: 5px;'>重置</a>";
     }
 
     public function __toString()

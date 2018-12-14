@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
 class UrlRow
 {

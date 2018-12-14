@@ -2,14 +2,19 @@
 
 namespace App\Admin\Controllers\Employee;
 
-use App\Admin\Extensions\Column\AddTeamRow;
-use App\Admin\Extensions\Column\DeleteRow;
-use App\Admin\Extensions\Column\UrlRow;
+use App\Admin\Extensions\Columns\AddTeamRow;
+use App\Admin\Extensions\Columns\DeleteRow;
+use App\Admin\Extensions\Columns\UrlRow;
 use App\Admin\Extensions\Expoters\EmployeeExporter;
+use App\Admin\Extensions\Importers\EmployeeImporter;
+use App\Admin\Extensions\Templates\EmployeeTemplate;
 use App\Exports\EmployeeExport;
+use App\Exports\EmployeeImportErrorExport;
+use App\Handlers\ExcelUploadHandler;
 use App\Helpers\Api\ApiResponse;
-use App\Http\Controllers\Controller;
+use App\Imports\EmployeeImport;
 use App\Models\Employee;
+use App\Models\EmployeeImportError;
 use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
@@ -17,6 +22,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Encore\Admin\Widgets\Box;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -122,6 +128,8 @@ class EmployeeController extends CommonEmployeeController
         });
         $grid->tools(function (Grid\Tools $tools) {
             $tools->append(new EmployeeExporter());
+            $tools->append(new EmployeeImporter());
+            $tools->append(new EmployeeTemplate());
         });
         return $grid;
     }
@@ -164,13 +172,8 @@ class EmployeeController extends CommonEmployeeController
         $userModel = config('admin.database.users_model');
         $permissionModel = config('admin.database.permissions_model');
         $roleModel = config('admin.database.roles_model');
-
         $form = new Form(new $userModel());
-
         $form->display('id', 'ID');
-
-
-
 
         $form->text('username', '账号')->rules(function($form) {
             // 如果 $form->model()->id 不为空，代表是编辑操作
@@ -219,7 +222,7 @@ class EmployeeController extends CommonEmployeeController
         $form->display('updated_at', trans('admin.updated_at'));
         $form->saving(function (Form $form) {
             if ($form->password && $form->model()->password != $form->password) {
-                $form->password = bcrypt($form->password);
+                    $form->password = bcrypt($form->password);
             }
         });
 
@@ -230,9 +233,10 @@ class EmployeeController extends CommonEmployeeController
     /**
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
      */
-    public function apiEmployeeExport()
+    public function apiEmployeeExport(Request $request)
     {
-        return Excel::download(new EmployeeExport(), 'employee.xlsx');
+        $e = Employee::all()->toArray();
+        return Excel::download(new EmployeeExport($e,'优易居'), 'employee.xlsx');
     }
 
 
@@ -278,5 +282,69 @@ class EmployeeController extends CommonEmployeeController
         }catch (\Exception $e){
             return $this->message($e->getMessage(),'error');
         }
+    }
+
+
+    /**
+     * @return Content
+     */
+    public function importCreate()
+    {
+        return Admin::content(function (Content $content) {
+            $content->header('员工管理');
+            $content->description('导入');
+            $form = new \Encore\Admin\Widgets\Form();
+            $form->method('POST');
+            $form->action('/admin/employee-import');
+            $form->file('file', '导入文件');
+            $box = new Box('员工导入');
+            $box->content($form);
+            $content->body($box);
+        });
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Exception
+     */
+    public function importStore(Request $request)
+    {
+        $file = $request->file;
+        if ( !$file->isValid()) { //判断文件是否有效
+            return redirect()->back()->withErrors('文件上传失败,请重新上传');
+        }
+        $tabels = Excel::toArray(new EmployeeImport(), $file);
+        $rows = $tabels[0];
+        if(!$rows){
+            return redirect()->back()->withErrors('文件无内容,请重新上传');
+        }
+        //导入操作
+        $usernameArray = Employee::all()->pluck('username')->toArray();
+        $errorArray = null;
+        foreach ($rows as $row)
+        {
+            if(in_array($row[0],$usernameArray)){//验证是否有重复
+                $row[2] = '账号有重复';
+                $errorArray[] = $row;
+                continue;
+            }
+            //验证通过开始导入
+            $employee['username']       = $row[0];
+            $employee['name']           = $row[1];
+            $employee['password']       = bcrypt($row[0]);
+            Employee::create($employee);
+        }
+        if($errorArray){//如果有错误就生产错误的文件，并生成记录查阅
+            $folder_name = "files/import/" . date("Ym", time()) . '/'.date("d", time());
+            $filename = 'error'.time() . '_' . str_random(10) . '.xlsx';
+            $upload_path = $folder_name.$filename;
+            if(Excel::store(new EmployeeImportErrorExport($errorArray,'优易居'), $upload_path,'admin')){
+                EmployeeImportError::create(['url'=>$upload_path,'created_id'=>Admin::user()->id]);
+            }
+            $url = asset('uploads/'.$upload_path);
+            admin_error('错误提醒','导入数据部分有错误，如需了解详情请点击链接下载详情：<a target="_blank" href="'.$url.'">'.$url.'</a>');
+        }
+        return redirect('/admin/employee');
     }
 }

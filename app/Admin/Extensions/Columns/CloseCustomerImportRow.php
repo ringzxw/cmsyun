@@ -1,28 +1,31 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
+use App\Models\Base;
 use Encore\Admin\Admin;
 
-class AddTeamManagerRow
+class CloseCustomerImportRow
 {
     protected $id;
-    protected $team_id;
+    protected $is_close;
 
-    public function __construct($id,$team_id)
+    public function __construct($id,$is_close)
     {
         $this->id = $id;
-        $this->team_id = $team_id;
+        $this->is_close = $is_close;
     }
 
     protected function script()
     {
         return <<<SCRIPT
-$('.grid-row-add-manager').unbind('click').click(function() {
+$('.grid-row-close').unbind('click').click(function() {
+    var ids = [];
     var id = $(this).data('id');
+    var close = $(this).data('close');
+    ids.push(id);
     swal({ 
-      title: '确认设置操作？',
-      text:"设置此员工为团队管理员，团队中只会有一个管理员！", 
+      title: '确认关闭？', 
       type: 'warning',
       showCancelButton: true, 
       confirmButtonColor: '#3085d6',
@@ -33,12 +36,12 @@ $('.grid-row-add-manager').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/employee-team-manager-setting',
+                    url: '/admin/api/close-customer-import',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        employee_id: id,
-                        employee_team_id: '{$this->team_id}',
+                        ids: ids,
+                        is_close:close,
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
@@ -61,8 +64,8 @@ SCRIPT;
     protected function render()
     {
         Admin::script($this->script());
-
-        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-add-manager'>设置管理员</a>";
+        $name = $this->is_close==Base::CLOSE_TRUE?'关闭':'恢复';
+        return "<a href='javascript:void(0);' data-id='{$this->id}' data-close='{$this->is_close}' class='grid-row-close'>{$name}</a>";
     }
 
     public function __toString()

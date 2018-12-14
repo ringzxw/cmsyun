@@ -2,9 +2,9 @@
 
 namespace App\Admin\Controllers\Customer;
 
-use App\Admin\Extensions\Column\CustomerDetailRow;
-use App\Admin\Extensions\Column\DeleteRow;
-use App\Admin\Extensions\Column\UrlRow;
+use App\Admin\Extensions\Columns\CustomerDetailRow;
+use App\Admin\Extensions\Columns\DeleteRow;
+use App\Admin\Extensions\Columns\UrlRow;
 use App\Admin\Extensions\Htmls\CustomerDetailHtml;
 use App\Helpers\Api\ApiResponse;
 use App\Models\Customer;

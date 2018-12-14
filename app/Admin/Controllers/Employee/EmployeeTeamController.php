@@ -2,11 +2,11 @@
 
 namespace App\Admin\Controllers\Employee;
 
-use App\Admin\Extensions\Column\AddTeamManagerRow;
-use App\Admin\Extensions\Column\AddTeamRow;
-use App\Admin\Extensions\Column\DeleteRow;
-use App\Admin\Extensions\Column\RemoveTeamRow;
-use App\Admin\Extensions\Column\UrlRow;
+use App\Admin\Extensions\Columns\AddTeamManagerRow;
+use App\Admin\Extensions\Columns\AddTeamRow;
+use App\Admin\Extensions\Columns\DeleteRow;
+use App\Admin\Extensions\Columns\RemoveTeamRow;
+use App\Admin\Extensions\Columns\UrlRow;
 use App\Helpers\Api\ApiResponse;
 use App\Models\Employee;
 use App\Models\EmployeeTeam;

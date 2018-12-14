@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class EmployeeExport implements FromCollection, WithTitle, WithEvents, WithStrictNullComparison
+class EmployeeImportErrorExport implements FromCollection, WithTitle, WithEvents, WithStrictNullComparison
 {
     public $data;
     public $excel_name;
@@ -36,26 +36,11 @@ class EmployeeExport implements FromCollection, WithTitle, WithEvents, WithStric
                 // 设置单元格内容居中
                 $event->sheet->getDelegate()->getStyle('A1')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
                 // 定义列宽度
-                $widths = ['A' => 10, 'B' => 25, 'C' => 25];
+                $widths = ['A' => 25, 'B' => 25, 'C' => 50];
                 foreach ($widths as $k => $v) {
                     // 设置列宽度
                     $event->sheet->getDelegate()->getColumnDimension($k)->setWidth($v);
                 }
-//                $event->sheet->getDelegate()->getStyle('A1:C1')->applyFromArray([
-//                    'borders' => [
-//                        'outline' => [
-//                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THICK,
-//                            'color' => ['argb' => 'FFFF0000'],
-//                        ],
-//                        'fill' => array (
-//                            'type'       => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_GRADIENT_LINEAR ,
-//                            'rotation'   => 90,
-//                            'color' => array (
-//                                'argb' => 'FFFF0000'
-//                            )
-//                        )
-//                    ]
-//                ]);
             },
         ];
     }
@@ -70,12 +55,12 @@ class EmployeeExport implements FromCollection, WithTitle, WithEvents, WithStric
     {
         if (!empty($this->data)) {
             foreach ($this->data as $key => $vo) {
-                $data[$key]['id']       = $vo['id'];
-                $data[$key]['name']     = $vo['name'];
-                $data[$key]['username'] = $vo['username'];
+                $data[$key]['username'] = $vo[0];
+                $data[$key]['name']     = $vo[1];
+                $data[$key]['error']    = $vo[2];
             }
             $title = [$this->title()];
-            $headings = ['ID','姓名','账号'];
+            $headings = ['账号','姓名','错误信息'];
             array_unshift($data, $title, $headings);
             // 此处数据需要数组转集合
             return collect($data);
@@ -85,7 +70,7 @@ class EmployeeExport implements FromCollection, WithTitle, WithEvents, WithStric
     public function title(): string
     {
         // 设置工作䈬的名称
-        return $this->excel_name . '员工明细';
+        return $this->excel_name . '导入错误明细';
     }
 
 }

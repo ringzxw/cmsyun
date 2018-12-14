@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Admin\Extensions\Column;
+namespace App\Admin\Extensions\Columns;
 
 use Encore\Admin\Admin;
 
-class DeleteRemindRow
+class AddTeamAdminRow
 {
     protected $id;
+    protected $team_id;
 
-    public function __construct($id)
+    public function __construct($id,$team_id)
     {
         $this->id = $id;
+        $this->team_id = $team_id;
     }
 
     protected function script()
     {
         return <<<SCRIPT
-$('.grid-row-remove').unbind('click').click(function() {
-    var ids = [];
+$('.grid-row-add-admin').unbind('click').click(function() {
     var id = $(this).data('id');
-    ids.push(id);
     swal({ 
-      title: '确认此操作？',
+      title: '确认设置操作？',
+      text:"设置此员工为团队管理员，团队中只会有一个管理员！", 
       type: 'warning',
       showCancelButton: true, 
       confirmButtonColor: '#3085d6',
@@ -32,11 +33,12 @@ $('.grid-row-remove').unbind('click').click(function() {
             return new Promise(function(resolve, reject) {
                 $.ajax({
                     method: 'post',
-                    url: '/admin/api/delete-remind',
+                    url: '/admin/api/employee-team-admin-setting',
                     dataType: "json",
                     data: {
                         _token:LA.token,
-                        ids: ids,
+                        employee_id: id,
+                        employee_team_id: '{$this->team_id}',
                     },
                     success: function (json) {
                         $.pjax.reload('#pjax-container');
@@ -59,7 +61,8 @@ SCRIPT;
     protected function render()
     {
         Admin::script($this->script());
-        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-remove'>已读</a>";
+
+        return "<a href='javascript:void(0);' data-id='{$this->id}' class='grid-row-add-admin'>设置管理员</a>";
     }
 
     public function __toString()

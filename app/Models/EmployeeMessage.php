@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class EmployeeMessage extends Model
 {
     use BizTrait;
+    protected $guarded = [];
     /**
      * Detach models from the relationship.
      *
