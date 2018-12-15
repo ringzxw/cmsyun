@@ -22,7 +22,7 @@ class CreateEmployeeMessagesTable extends Migration
             $table->integer('biz_id')->index()->comment('业务ID');
             $table->string('title')->comment('消息标题')->nullable();
             $table->string('content')->comment('消息内容')->nullable();
-            $table->integer('created_id')->index()->comment('创建者ID,系统创建为null')->nullable();
+            $table->integer('creator_id')->index()->comment('创建者ID,系统创建为null')->nullable();
             $table->tinyInteger('is_read')->comment('是否已读')->nullable();
             $table->timestamps();
             $table->softDeletes();

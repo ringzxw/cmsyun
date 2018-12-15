@@ -16,7 +16,7 @@ class CreateCustomersTable extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->increments('id');
-            $table->integer('create_user_id')->index()->comment('创建者');
+            $table->integer('creator_id')->index()->comment('创建者');
             $table->integer('employee_id')->index()->comment('所属员工')->nullable();
             $table->integer('scene_id')->index()->comment('所属案场')->nullable();
             $table->string('name')->comment('姓名')->nullable();

@@ -55,7 +55,7 @@ class QueryService extends BaseService
         }elseif ($permissionService->check('view-customer-team')){
             //找到自己的团队
             +
-            $employeeTeam = $this->employee->employeeTeam;
+            $employeeTeam = $this->employee->team;
             if($employeeTeam instanceof EmployeeTeam){
                 $employeeIds = $employeeTeam->employees->pluck('id');
                 $query->whereIn('id',$employeeIds);

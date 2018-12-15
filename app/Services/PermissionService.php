@@ -2,44 +2,14 @@
 namespace App\Services;
 
 use App\Models\Employee;
+use App\Models\Permission;
 use App\Models\PermissionGroup;
-use App\Utils\PermissionUtils;
-use Encore\Admin\Auth\Database\Permission;
-
 class PermissionService extends BaseService
 {
 
     public function getPermissionGroup()
     {
         $permissionGroups = PermissionGroup::with('permissions')->get();
-//
-//        $permissions = Permission::all();
-//        //更新个人权限
-//        if($this->employee){
-//            $employeePermissions = $this->employee->permissions;
-//            if(count($employeePermissions) != count($permissions)){
-//                //没有所有操作的权限
-//                $this->employee->permissions()->detach(1);
-//            }
-//        }
-//        $permissionGroups = array();
-//        foreach ($permissions as $permission)
-//        {
-//            $permission->is_all = 'single';
-//            $first =  explode('-',$permission->slug)[0];
-//            $configs = PermissionUtils::permissionConfigs();
-//
-//            foreach ($configs as $k => $v)
-//            {
-//                if($first == $v['key']){
-//                    $permissionGroups[$k]['name'] = $v['name'];
-//                    $permissionGroups[$k]['list'][] = $permission;
-//                    if($k === 0){
-//                        $permission->is_all = 'all';
-//                    }
-//                }
-//            }
-//        }
         return $permissionGroups;
     }
 
@@ -50,11 +20,15 @@ class PermissionService extends BaseService
         $employee->permissions()->attach($permission_ids);
     }
 
-
-
     public function getAllPermissionOption()
     {
-        return Permission::all()->pluck('id','name');
+        $permissions = Permission::with('group')->orderBy('sort')->get();
+        $permissionArray = array();
+        foreach ($permissions as $k => $permission)
+        {
+            $permissionArray[$permission->slug] = $permission->full_name;
+        }
+        return $permissionArray;
     }
 
     public function check($permission)

@@ -20,7 +20,7 @@ class CommonEmployeeController extends Controller
         $grid->name(trans('admin.name'));
         $grid->mobile('联系方式');
         $grid->email('邮箱');
-        $grid->employeeTeam()->name('所属团队')->label('primary');
+        $grid->team()->name('所属团队')->label('primary');
         $grid->roles(trans('admin.roles'))->pluck('name')->label();
         $grid->disableExport();
         $grid->disableRowSelector();

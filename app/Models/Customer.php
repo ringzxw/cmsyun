@@ -79,9 +79,9 @@ class Customer extends BaseModel
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function createUser()
+    public function creator()
     {
-        return $this->belongsTo(Employee::class,'create_user_id');
+        return $this->belongsTo(Employee::class,'creator_id');
     }
 
     /**

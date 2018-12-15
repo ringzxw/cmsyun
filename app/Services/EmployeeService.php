@@ -26,7 +26,7 @@ class EmployeeService extends BaseService
             return $employee_ids;
         }
         //找到自己的团队
-        $employeeTeam = $this->employee->employeeTeam;
+        $employeeTeam = $this->employee->team;
         if($employeeTeam instanceof EmployeeTeam){
             //判断是否是团队管理员
             if($employeeTeam->manager_id == $this->employee->id){

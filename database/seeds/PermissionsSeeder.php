@@ -236,6 +236,7 @@ class PermissionsSeeder extends Seeder
                 $item['permission_group_id']    = $itemG['id'];
                 $item['name']                   = $permission['name'];
                 $item['slug']                   = $permission['slug'];
+                $item['sort']                   = $int;
                 $this->createPermission($item);
                 $int++;
             }

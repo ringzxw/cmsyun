@@ -111,7 +111,7 @@ class Employee extends BaseModel implements AuthenticatableContract,JWTSubject
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function employeeTeam()
+    public function team()
     {
         return $this->belongsTo(EmployeeTeam::class);
     }
@@ -119,7 +119,7 @@ class Employee extends BaseModel implements AuthenticatableContract,JWTSubject
     /**
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */
-    public function employeeMessages()
+    public function messages()
     {
         return $this->hasMany(EmployeeMessage::class);
     }

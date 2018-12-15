@@ -20,7 +20,7 @@ class EmployeeTransformer extends TransformerAbstract
             'updated_at'    => $employee->updated_at->toDateTimeString(),
             'role'          => $role->slug,
             'role_name'     => $role->name,
-            'team_name'     => $employee->employeeTeam->name,
+            'team_name'     => $employee->team->name,
         ];
     }
 }

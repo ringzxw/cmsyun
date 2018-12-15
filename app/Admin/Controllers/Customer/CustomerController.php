@@ -93,7 +93,7 @@ class CustomerController extends Controller
     protected function grid()
     {
         $grid = new Grid(new Customer);
-        $grid->model()->withOnly('createUser', ['name']);
+        $grid->model()->withOnly('creator', ['name']);
         $grid->id('ID');
         $grid->name('姓名');
         $grid->mobile('手机号');
@@ -104,7 +104,7 @@ class CustomerController extends Controller
             return $status_html;
         });
         $grid->column('创建人')->display(function (){
-            return $this->createUser?$this->createUser['name']:'';
+            return $this->creator?$this->creator['name']:'';
         });
         $grid->actions(function (Grid\Displayers\Actions $actions) {
             $actions->disableDelete();

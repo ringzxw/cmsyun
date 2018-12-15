@@ -40,9 +40,9 @@ class Permission extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function permissionGroup()
+    public function group()
     {
-        return $this->belongsTo(PermissionGroup::class);
+        return $this->belongsTo(PermissionGroup::class,'permission_group_id');
     }
 
     /**
@@ -182,5 +182,11 @@ class Permission extends Model
             }
         }
         return $id;
+    }
+
+    // 定义一个访问器
+    public function getFullNameAttribute()
+    {
+        return $this->group->name.'-'.$this->name;
     }
 }

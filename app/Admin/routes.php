@@ -8,6 +8,7 @@ Route::group([
     'prefix'        => config('admin.route.prefix'),
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
+    $router->resource('auth/menu', 'App\Admin\Controllers\MenuController', ['except' => ['create']]);
 
     $router->get('/', 'App\Admin\Controllers\HomeController@index');
 
@@ -29,4 +30,6 @@ Route::group([
 
     $router->resource('customer', \App\Admin\Controllers\Customer\CustomerController::class);
     $router->post('api/customer-detail', 'App\Admin\Controllers\Customer\CustomerController@apiDetail');
+
+    $router->resource('mobile', \App\Admin\Controllers\Mobile\MobilePoolController::class);
 });
