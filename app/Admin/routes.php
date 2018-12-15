@@ -32,4 +32,5 @@ Route::group([
     $router->post('api/customer-detail', 'App\Admin\Controllers\Customer\CustomerController@apiDetail');
 
     $router->resource('mobile', \App\Admin\Controllers\Mobile\MobilePoolController::class);
+    $router->resource('mobile-import', \App\Admin\Controllers\Mobile\MobileImportController::class);
 });

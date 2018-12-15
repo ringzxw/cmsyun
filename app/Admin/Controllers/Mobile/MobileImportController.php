@@ -2,17 +2,15 @@
 
 namespace App\Admin\Controllers\Mobile;
 
-use App\Admin\Extensions\Importers\MobileImporter;
-use App\Models\MobilePool;
+use App\Models\MobileImport;
 use App\Http\Controllers\Controller;
 use Encore\Admin\Controllers\HasResourceActions;
-use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 
-class MobilePoolController extends Controller
+class MobileImportController extends Controller
 {
     use HasResourceActions;
 
@@ -25,7 +23,8 @@ class MobilePoolController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('号码池')
+            ->header('Index')
+            ->description('description')
             ->body($this->grid());
     }
 
@@ -80,36 +79,20 @@ class MobilePoolController extends Controller
      */
     protected function grid()
     {
-        $grid = new Grid(new MobilePool);
-        $grid->model()->withOnly('creator', ['name']);
-        $grid->model()->with('import');
-        $grid->id('ID');
-        $grid->mobile('手机号');
-        $grid->name('姓名');
+        $grid = new Grid(new MobileImport);
+        $grid->id('ID')->sortable();
+        $grid->title('Title');
+        $grid->employee()->name('所属员工');
+        $grid->projectItem()->name('主推产品');
         $grid->labels_html('导入意向')->display(function ($labels_html){
             return $labels_html;
         });
         $grid->status_html('池中状态')->display(function ($status_html){
             return $status_html;
         });
-        $grid->column('提供人')->display(function (){
-            return $this->creator?$this->creator['name']:'';
-        });
-        $grid->actions(function (Grid\Displayers\Actions $actions) {
-            $actions->disableDelete();
-            $actions->disableEdit();
-            $actions->disableView();
-        });
-        $grid->tools(function (Grid\Tools $tools) {
-            if (Admin::user()->can('employee-index')) {
-                $tools->append(new MobileImporter());
-            }
-            if (Admin::user()->can('employee-create')) {
-            }
-        });
-        $grid->disableExport();
-        $grid->disableRowSelector();
-        $grid->disableCreateButton();
+        $grid->import_status('Import status');
+        $grid->file('File');
+        $grid->status('Status');
         return $grid;
     }
 
@@ -121,9 +104,21 @@ class MobilePoolController extends Controller
      */
     protected function detail($id)
     {
-        $show = new Show(MobilePool::findOrFail($id));
+        $show = new Show(MobileImport::findOrFail($id));
 
-
+        $show->id('Id');
+        $show->type('Type');
+        $show->employee_id('Employee id');
+        $show->project_item_id('Project item id');
+        $show->labels('Labels');
+        $show->title('Title');
+        $show->file('File');
+        $show->success('Success');
+        $show->import_status('Import status');
+        $show->status('Status');
+        $show->created_at('Created at');
+        $show->updated_at('Updated at');
+        $show->deleted_at('Deleted at');
 
         return $show;
     }
@@ -135,9 +130,17 @@ class MobilePoolController extends Controller
      */
     protected function form()
     {
-        $form = new Form(new MobilePool);
+        $form = new Form(new MobileImport);
 
-
+        $form->switch('type', 'Type');
+        $form->number('employee_id', 'Employee id');
+        $form->number('project_item_id', 'Project item id');
+        $form->switch('labels', 'Labels');
+        $form->text('title', 'Title');
+        $form->file('file', 'File');
+        $form->number('success', 'Success');
+        $form->text('import_status', 'Import status');
+        $form->switch('status', 'Status');
 
         return $form;
     }

@@ -11,6 +11,7 @@ namespace App\Utils;
 use App\Models\Base;
 use App\Models\Customer;
 use App\Models\CustomerSuccess;
+use App\Models\MobilePool;
 
 class FormatUtil
 {
@@ -359,7 +360,7 @@ class FormatUtil
     }
 
     /**
-     * 获取意向等级样式
+     * 获取客户意向等级样式
      * @param $val
      * @param string $default
      * @return mixed|string

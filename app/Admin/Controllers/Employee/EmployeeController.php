@@ -127,8 +127,12 @@ class EmployeeController extends CommonEmployeeController
             }
         });
         $grid->tools(function (Grid\Tools $tools) {
-            $tools->append(new EmployeeExporter());
-            $tools->append(new EmployeeImporter());
+            if (Admin::user()->can('employee-index')) {
+                $tools->append(new EmployeeExporter());
+            }
+            if (Admin::user()->can('employee-create')) {
+                $tools->append(new EmployeeImporter());
+            }
             $tools->append(new EmployeeTemplate());
         });
         return $grid;
