@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Utils\FormatUtil;
+use Illuminate\Support\Facades\Redis;
 
 class MobilePool extends BaseModel
 {
@@ -17,6 +18,35 @@ class MobilePool extends BaseModel
     const STATUS_NOT_HAVE   = 40;
     /** 号码池状态：已关闭 */
     const STATUS_CLOSE      = 88;
+
+    /** redis的key值 */
+    const REDIS_KEY         = 'pools:mobile';
+
+    /**
+     * Detach models from the relationship.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->status = static::STATUS_WAIT_USER;
+        });
+        static::created(function ($model) {
+            Redis::sadd(static::REDIS_KEY,$model->mobile);
+        });
+        static::updated(function ($model) {
+            if($model->status == static::STATUS_WAIT_USER){
+                Redis::sadd(static::REDIS_KEY,$model->mobile);
+            }
+        });
+        static::deleted(function ($model) {
+            Redis::srem(static::REDIS_KEY,$model->mobile);
+        });
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

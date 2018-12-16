@@ -2,17 +2,22 @@
 
 namespace App\Admin\Controllers\Mobile;
 
+use App\Admin\Extensions\Templates\MobileImportTemplate;
 use App\Models\MobileImport;
 use App\Http\Controllers\Controller;
+use App\Services\Traits\ServicesTrait;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Support\Facades\Redis;
 
 class MobileImportController extends Controller
 {
     use HasResourceActions;
+    use ServicesTrait;
 
     /**
      * Index interface.
@@ -22,6 +27,9 @@ class MobileImportController extends Controller
      */
     public function index(Content $content)
     {
+//        $key = 'pools:mobile';
+//        $nums = Redis::sunion($key);
+//        $nums = Redis::sismember($key,'18130066204');
         return $content
             ->header('Index')
             ->description('description')
@@ -93,6 +101,9 @@ class MobileImportController extends Controller
         $grid->import_status('Import status');
         $grid->file('File');
         $grid->status('Status');
+        $grid->tools(function (Grid\Tools $tools) {
+            $tools->append(new MobileImportTemplate());
+        });
         return $grid;
     }
 
@@ -131,17 +142,15 @@ class MobileImportController extends Controller
     protected function form()
     {
         $form = new Form(new MobileImport);
-
-        $form->switch('type', 'Type');
-        $form->number('employee_id', 'Employee id');
-        $form->number('project_item_id', 'Project item id');
-        $form->switch('labels', 'Labels');
         $form->text('title', 'Title');
-        $form->file('file', 'File');
-        $form->number('success', 'Success');
-        $form->text('import_status', 'Import status');
-        $form->switch('status', 'Status');
-
+        $folder_name = "files/mobile/import/" . date("Ym", time()) . '/'.date("d", time());
+        $filename = time() . '_' . str_random(10) . '.xlsx';
+        $form->file('file', 'File')->move($folder_name, $filename);
+        $form->saving(function ($form) {
+            if(!$form->model()->id){
+                $form->model()->creator_id = Admin::user()->id;
+            }
+        });
         return $form;
     }
 }

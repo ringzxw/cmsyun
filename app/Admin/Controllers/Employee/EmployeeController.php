@@ -340,8 +340,8 @@ class EmployeeController extends CommonEmployeeController
             Employee::create($employee);
         }
         if($errorArray){//如果有错误就生产错误的文件，并生成记录查阅
-            $folder_name = "files/import/" . date("Ym", time()) . '/'.date("d", time());
-            $filename = 'error'.time() . '_' . str_random(10) . '.xlsx';
+            $folder_name = "files/employee/error/" . date("Ym", time()) . '/'.date("d", time());
+            $filename = time() . '_' . str_random(10) . '.xlsx';
             $upload_path = $folder_name.$filename;
             if(Excel::store(new EmployeeImportErrorExport($errorArray,'优易居'), $upload_path,'admin')){
                 EmployeeImportError::create(['url'=>$upload_path,'created_id'=>Admin::user()->id]);

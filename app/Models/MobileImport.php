@@ -16,6 +16,20 @@ class MobileImport extends Model
     const STATUS_CLOSE      = 88;
 
     /**
+     * Detach models from the relationship.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->status = static::STATUS_WAIT;
+        });
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */
     public function pools()
@@ -53,7 +67,7 @@ class MobileImport extends Model
 
     public function getLabelsHtmlAttribute()
     {
-        return FormatUtil::getLabelHtml($this->import->labels);
+        return FormatUtil::getLabelHtml($this->labels);
     }
 
     /**

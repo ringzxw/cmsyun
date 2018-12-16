@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Services\MobileService;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -24,8 +25,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        if(config('app.debug')){
+            $schedule->call(function () {
+                $s = new MobileService();
+                $s->import();
+            });
+        }else{
+            $schedule->command('mobile:import')->description('号码导入');
+        }
     }
 
     /**

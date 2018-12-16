@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\EmployeeService;
 use App\Services\MessageService;
+use App\Services\MobileService;
 use App\Services\PermissionService;
 use App\Services\QueryService;
 use Illuminate\Support\Facades\Schema;
@@ -44,6 +45,9 @@ class AppServiceProvider extends ServiceProvider
         });
         $this->app->bind('messageService', function () {
             return new MessageService();
+        });
+        $this->app->bind('mobileService', function () {
+            return new MobileService();
         });
     }
 }
