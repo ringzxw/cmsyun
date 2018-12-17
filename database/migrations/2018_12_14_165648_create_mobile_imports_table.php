@@ -17,6 +17,7 @@ class CreateMobileImportsTable extends Migration
             $table->engine = 'InnoDB';
             $table->increments('id');
             $table->tinyInteger('type')->index()->comment('导入类型')->nullable();
+            $table->integer('broker_id')->index()->comment('提供者')->nullable();
             $table->integer('employee_id')->index()->comment('绑定员工')->nullable();
             $table->integer('project_item_id')->comment('主推产品')->nullable();
             $table->tinyInteger('labels')->comment('导入等级')->nullable();

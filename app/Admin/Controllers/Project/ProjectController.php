@@ -6,6 +6,7 @@ use App\Admin\Extensions\Columns\DeleteRow;
 use App\Admin\Extensions\Columns\UrlRow;
 use App\Models\Project;
 use App\Http\Controllers\Controller;
+use App\Models\ProjectItem;
 use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
@@ -13,6 +14,7 @@ use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
@@ -162,5 +164,28 @@ class ProjectController extends Controller
             $form->text('name', '产品名称')->rules('required');
         });
         return $form;
+    }
+
+    /**
+     * @param Request $request
+     * @param ProjectItem $projectItem
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function apiIndex(Request $request, ProjectItem $projectItem)
+    {
+        $search = $request->input('q');
+        $query = $projectItem::query();
+        $query->where(function ($q) use ($search) {
+            $q->where('name', 'like', '%'.$search.'%')
+                ->orWhereHas('project', function ($q) use ($search){
+                    $q->where('name', 'like', '%'.$search.'%');
+                });
+        });
+        $result = $query->paginate();
+        // 把查询出来的结果重新组装成 Laravel-Admin 需要的格式
+        $result->setCollection($result->getCollection()->map(function (ProjectItem $projectItem) {
+            return ['id' => $projectItem->id, 'text' => $projectItem->full_name];
+        }));
+        return $result;
     }
 }

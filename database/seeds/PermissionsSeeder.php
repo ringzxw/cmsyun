@@ -221,6 +221,31 @@ class PermissionsSeeder extends Seeder
                     ],
                 ]
             ],
+
+            [
+                'name'          => '号码池管理',
+                'title'         => '',
+                'permission'    => [
+                    [
+                        'name'          => '列表',
+                        'slug'          => 'mobile-index',
+                        'http_method'   => '',
+                        'http_path'     => '',
+                    ],
+                    [
+                        'name'          => '导入',
+                        'slug'          => 'mobile-create',
+                        'http_method'   => '',
+                        'http_path'     => '',
+                    ],
+                    [
+                        'name'          => '关闭',
+                        'slug'          => 'mobile-close',
+                        'http_method'   => '',
+                        'http_path'     => '',
+                    ],
+                ]
+            ],
         ];
 
         \App\Models\PermissionGroup::destroy(\App\Models\PermissionGroup::all()->pluck('id')->toArray());

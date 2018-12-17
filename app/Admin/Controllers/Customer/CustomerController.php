@@ -167,9 +167,11 @@ class CustomerController extends Controller
         $form->select('channel','客户来源')->options(OptionUtil::getChannelOption())->rules('required');
         if (Admin::user()->can('customer-allot')) {
             $form->select('employee_id', '所属员工')->options(function ($id) {
-                $employee = Employee::find($id);
-                if ($employee) {
-                    return [$employee->id => $employee->full_name];
+                if($id){
+                    $employee = Employee::find($id);
+                    if ($employee) {
+                        return [$employee->id => $employee->full_name];
+                    }
                 }
             })->ajax('/admin/api/employee');
         }else{

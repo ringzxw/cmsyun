@@ -27,10 +27,12 @@ Route::group([
     $router->post('api/employee-team-remove', 'App\Admin\Controllers\Employee\EmployeeTeamController@apiRemove');
 
     $router->resource('project', \App\Admin\Controllers\Project\ProjectController::class);
+    $router->get('api/project-item', 'App\Admin\Controllers\Project\ProjectController@apiIndex');
 
     $router->resource('customer', \App\Admin\Controllers\Customer\CustomerController::class);
     $router->post('api/customer-detail', 'App\Admin\Controllers\Customer\CustomerController@apiDetail');
 
     $router->resource('mobile', \App\Admin\Controllers\Mobile\MobilePoolController::class);
     $router->resource('mobile-import', \App\Admin\Controllers\Mobile\MobileImportController::class);
+    $router->post('api/mobile-close', 'App\Admin\Controllers\Mobile\MobileImportController@apiMobileClose');
 });

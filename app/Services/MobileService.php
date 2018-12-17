@@ -10,6 +10,7 @@ use App\Models\MobilePool;
 use App\Models\MobileRoom;
 use App\Utils\DateUtil;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 use Maatwebsite\Excel\Facades\Excel;
 
 class MobileService extends BaseService
@@ -70,6 +71,33 @@ class MobileService extends BaseService
         }
     }
 
+
+    /**
+     * @param $id
+     * @throws \Exception
+     */
+    public function close($id){
+        /** @var MobileImport $mobileImport */
+        $mobileImport = MobileImport::findOrFail($id);
+        try{
+            DB::beginTransaction();
+            $mobilePools = $mobileImport->pools;
+            /** @var MobilePool $mobilePool */
+            foreach ($mobilePools as $mobilePool)
+            {
+                $mobilePool->status = MobilePool::STATUS_CLOSE;
+                $mobilePool->save();
+                Redis::srem(MobilePool::REDIS_KEY,$mobilePool->mobile);
+            }
+            $mobileImport->status = MobileImport::STATUS_CLOSE;
+            $mobileImport->save();
+            DB::commit();
+        }catch (\Exception $exception){
+            DB::rollBack();
+        }
+    }
+
+
     private function _initMobilePool(MobileImport $mobileImport, $row)
     {
         $mobilePool = new MobilePool();
@@ -91,7 +119,6 @@ class MobileService extends BaseService
         }
         $mobileImport->error = $upload_path;
     }
-
 
     private function _initMobileDetail($row)
     {

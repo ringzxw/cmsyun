@@ -121,18 +121,18 @@ class OptionUtil
         $options = null;
         $options = collect($options);
         if(!$filter){
-            $options->put(Base::LABEL_S,'== S ==');
-            $options->put(Base::LABEL_A,'== A ==');
-            $options->put(Base::LABEL_B,'== B ==');
-            $options->put(Base::LABEL_C,'== C ==');
-            $options->put(Base::LABEL_D,'== D ==');
+            $options->put(Customer::LABEL_S,'== S ==');
+            $options->put(Customer::LABEL_A,'== A ==');
+            $options->put(Customer::LABEL_B,'== B ==');
+            $options->put(Customer::LABEL_C,'== C ==');
+            $options->put(Customer::LABEL_D,'== D ==');
 //            $options->put(Base::LABEL_E,'== E ==');
         }else{
-            $options->put(Base::LABEL_S,'S');
-            $options->put(Base::LABEL_A,'A');
-            $options->put(Base::LABEL_B,'B');
-            $options->put(Base::LABEL_C,'C');
-            $options->put(Base::LABEL_D,'D');
+            $options->put(Customer::LABEL_S,'S');
+            $options->put(Customer::LABEL_A,'A');
+            $options->put(Customer::LABEL_B,'B');
+            $options->put(Customer::LABEL_C,'C');
+            $options->put(Customer::LABEL_D,'D');
 //            $options->put(Base::LABEL_E,'E');
         }
         $options->all();

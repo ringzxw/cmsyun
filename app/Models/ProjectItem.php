@@ -13,4 +13,10 @@ class ProjectItem extends BaseModel
     {
         return $this->belongsTo(Project::class);
     }
+
+    // 定义一个访问器
+    public function getFullNameAttribute()
+    {
+        return $this->project->name.'-'.$this->name;
+    }
 }
