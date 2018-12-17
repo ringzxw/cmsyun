@@ -30,12 +30,24 @@ class MobileImport extends Model
     }
 
     /**
+     *
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */
     public function pools()
     {
         return $this->hasMany(MobilePool::class);
     }
+
+    /**
+     * 还能使用的号码
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     */
+    public function validPools()
+    {
+        return $this->hasMany(MobilePool::class)->whereIn('status',[MobilePool::STATUS_WAIT_USER,MobilePool::STATUS_CLOSE]);
+    }
+
+
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

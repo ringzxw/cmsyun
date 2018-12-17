@@ -2,11 +2,13 @@
 
 namespace App\Admin\Controllers\Mobile;
 
+use App\Admin\Extensions\Columns\CloseMobileImportRow;
 use App\Admin\Extensions\Templates\MobileImportTemplate;
+use App\Helpers\Api\ApiResponse;
 use App\Models\Employee;
 use App\Models\MobileImport;
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
+use Encore\Admin\Auth\Permission;
 use App\Models\ProjectItem;
 use App\Services\Traits\ServicesTrait;
 use App\Utils\OptionUtil;
@@ -21,6 +23,7 @@ class MobileImportController extends Controller
 {
     use HasResourceActions;
     use ServicesTrait;
+    use ApiResponse;
 
     /**
      * Index interface.
@@ -75,7 +78,7 @@ class MobileImportController extends Controller
             $actions->disableEdit();
             $actions->disableView();
             if (Admin::user()->can('mobile-close')) {
-                $actions->append(new CloseCustomerImportRow($actions->getKey(),$is_close));
+                $actions->append(new CloseMobileImportRow($actions->getKey(),$this->row->status));
             }
         });
         $grid->tools(function (Grid\Tools $tools) {

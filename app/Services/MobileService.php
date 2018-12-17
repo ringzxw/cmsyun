@@ -74,26 +74,47 @@ class MobileService extends BaseService
 
     /**
      * @param $id
-     * @throws \Exception
+     * @return MobileImport|bool
      */
     public function close($id){
-        /** @var MobileImport $mobileImport */
-        $mobileImport = MobileImport::findOrFail($id);
         try{
+            /** @var MobileImport $mobileImport */
+            $mobileImport = MobileImport::findOrFail($id);
+            $status = null;
+            switch ($mobileImport->status)
+            {
+                case MobileImport::STATUS_FINISH;
+                    $status = MobileImport::STATUS_CLOSE;
+                    break;
+                case MobileImport::STATUS_CLOSE;
+                    $status = MobileImport::STATUS_FINISH;
+                    break;
+            }
+            $mobileImport->status = $status;
             DB::beginTransaction();
-            $mobilePools = $mobileImport->pools;
+            $mobilePools = $mobileImport->validPools;
             /** @var MobilePool $mobilePool */
             foreach ($mobilePools as $mobilePool)
             {
-                $mobilePool->status = MobilePool::STATUS_CLOSE;
+                switch ($mobileImport->status)
+                {
+                    case MobileImport::STATUS_FINISH;
+                        $mobilePool->status = MobilePool::STATUS_WAIT_USER;
+                        Redis::sadd(MobilePool::REDIS_KEY,$mobilePool->mobile);
+                        break;
+                    case MobileImport::STATUS_CLOSE;
+                        $mobilePool->status = MobilePool::STATUS_CLOSE;
+                        Redis::srem(MobilePool::REDIS_KEY,$mobilePool->mobile);
+                        break;
+                }
                 $mobilePool->save();
-                Redis::srem(MobilePool::REDIS_KEY,$mobilePool->mobile);
             }
-            $mobileImport->status = MobileImport::STATUS_CLOSE;
             $mobileImport->save();
             DB::commit();
+            return $mobileImport;
         }catch (\Exception $exception){
             DB::rollBack();
+            return false;
         }
     }
 

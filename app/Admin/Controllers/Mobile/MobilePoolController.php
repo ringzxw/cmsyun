@@ -5,7 +5,7 @@ namespace App\Admin\Controllers\Mobile;
 use App\Admin\Extensions\Importers\MobileImporter;
 use App\Models\MobilePool;
 use App\Http\Controllers\Controller;
-use App\Models\Permission;
+use Encore\Admin\Auth\Permission;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Grid;
