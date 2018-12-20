@@ -239,7 +239,7 @@ class PermissionsSeeder extends Seeder
                         'http_path'     => '',
                     ],
                     [
-                        'name'          => '关闭',
+                        'name'          => '恢复/关闭',
                         'slug'          => 'mobile-close',
                         'http_method'   => '',
                         'http_path'     => '',

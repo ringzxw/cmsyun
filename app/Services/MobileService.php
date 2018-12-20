@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Exceptions\MobileImportException;
 use App\Exports\MobileImportErrorExport;
 use App\Imports\MobilePoolImport;
 use App\Models\MobileCompany;
@@ -8,6 +9,7 @@ use App\Models\MobileDetail;
 use App\Models\MobileImport;
 use App\Models\MobilePool;
 use App\Models\MobileRoom;
+use App\Utils\ConstUtils;
 use App\Utils\DateUtil;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -35,39 +37,45 @@ class MobileService extends BaseService
             unset($rows[1]);
             $mobileAll = array();
             //导入客户
-            DB::beginTransaction();
-            foreach ($rows as $row) {
-                if (empty($row[0]) && empty($row[1])) {
-                    $row[] = '手机号和姓名都为空';
-                    $errors[] = $row;
-                    continue;
+            try{
+                DB::beginTransaction();
+                foreach ($rows as $row) {
+                    if (empty($row[0]) && empty($row[1])) {
+                        $row[] = '手机号和姓名都为空';
+                        $errors[] = $row;
+                        continue;
+                    }
+                    if (empty($row[1])) {
+                        $row[] = '手机号为空';
+                        $errors[] = $row;
+                        continue;
+                    }
+                    if (!preg_match("/^1[345789]{1}\d{9}$/",$row[1])) {
+                        $row[] = '手机号格式不正确';
+                        $errors[] = $row;
+                        continue;
+                    }
+                    if(in_array($row[1],$mobileAll)){
+                        $row[] = '号码在此表格内有重复';
+                        $errors[] = $row;
+                        continue;
+                    }
+                    $mobileAll[] = $row[1];
+                    //通过验证 初始化相关数据
+                    static::_initMobilePool($mobileImport, $row);
+                    static::_initMobileDetail($row);
+                    static::_initMobileRoom($row);
+                    static::_initMobileCompany($row);
                 }
-                if (empty($row[1])) {
-                    $row[] = '手机号为空';
-                    $errors[] = $row;
-                    continue;
-                }
-                if (!preg_match("/^1[345789]{1}\d{9}$/",$row[1])) {
-                    $row[] = '手机号格式不正确';
-                    $errors[] = $row;
-                    continue;
-                }
-                if(in_array($row[1],$mobileAll)){
-                    $row[] = '号码在此表格内有重复';
-                    $errors[] = $row;
-                    continue;
-                }
-                $mobileAll[] = $row[1];
-                //通过验证 初始化相关数据
-                static::_initMobilePool($mobileImport, $row);
-                static::_initMobileDetail($row);
-                static::_initMobileRoom($row);
-                static::_initMobileCompany($row);
+                static::_initError($mobileImport, $errors);
+                $mobileImport->status = MobileImport::STATUS_FINISH;
+                $mobileImport->save();
+                DB::commit();
+                $this->getMessageService()->send($mobileImport->creator,$mobileImport,ConstUtils::BIZ_ACTION_MOBILE_IMPORT_TRUE,'号码导入成功',$mobileImport->title.'号码导入成功');
+            }catch (MobileImportException $exception){
+                DB::rollBack();
+                $this->getMessageService()->send($mobileImport->creator,$mobileImport,ConstUtils::BIZ_ACTION_MOBILE_IMPORT_FALSE,'号码导入失败',$mobileImport->title.'号码导入失败，请检查文件内容');
             }
-            static::_initError($mobileImport, $errors);
-            $mobileImport->status = MobileImport::STATUS_FINISH;
-            $mobileImport->save();
-            DB::commit();
         }
     }
 

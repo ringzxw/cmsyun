@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Utils\FormatUtil;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MobileImport extends Model
 {
+    use SoftDeletes;
+    protected $dates = ['deleted_at'];
     protected $guarded = [];
     /** 导入状态：导入中 */
     const STATUS_WAIT       = 10;
@@ -47,14 +50,28 @@ class MobileImport extends Model
         return $this->hasMany(MobilePool::class)->whereIn('status',[MobilePool::STATUS_WAIT_USER,MobilePool::STATUS_CLOSE]);
     }
 
-
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function broker()
+    {
+        return $this->belongsTo(Employee::class,'broker_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function creator()
+    {
+        return $this->belongsTo(Employee::class,'creator_id');
     }
 
     /**

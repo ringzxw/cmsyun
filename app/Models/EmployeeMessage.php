@@ -5,11 +5,15 @@ namespace App\Models;
 use App\Models\Traits\BizTrait;
 use App\Utils\ConstUtils;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EmployeeMessage extends Model
 {
     use BizTrait;
+    use SoftDeletes;
     protected $guarded = [];
+    protected $dates = ['deleted_at'];
+
     /**
      * Detach models from the relationship.
      *
@@ -19,7 +23,7 @@ class EmployeeMessage extends Model
     {
         parent::boot();
         static::creating(function ($model) {
-            $model->is_read = ConstUtils::IS_READ_FALSE;
+            $model->is_read = ConstUtils::READ_FALSE;
         });
     }
 

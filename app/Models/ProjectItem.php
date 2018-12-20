@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 class ProjectItem extends BaseModel
 {
+    use SoftDeletes;
+    protected $dates = ['deleted_at'];
     protected $guarded = [];
 
     /**

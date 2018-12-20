@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Utils\FormatUtil;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Customer extends BaseModel
 {
+    use SoftDeletes;
     protected $guarded = [];
     /** 客户状态：待约访 */
     const STATUS_WAIT_MEET = -2;
