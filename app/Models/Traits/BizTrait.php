@@ -15,10 +15,6 @@ trait BizTrait
      */
     public function setBiz($biz)
     {
-        if (!$biz) {
-            $this->biz_id = null;
-            $this->biz_type = ConstUtils::BIZ_TYPE_SYSTEM;
-        }
         if ($biz instanceof Employee) {
             $this->biz_id = $biz->id;
             $this->biz_type = ConstUtils::BIZ_TYPE_EMPLOYEE;

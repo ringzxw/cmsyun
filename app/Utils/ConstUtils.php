@@ -16,21 +16,19 @@ class ConstUtils
     /** 是否已读：否 */
     const READ_FALSE = 0;
 
+    /** BIZ类型：员工模块 */
+    const BIZ_TYPE_EMPLOYEE         = 100;
+    /** BIZ类型：项目模块 */
+    const BIZ_TYPE_PROJECT          = 200;
+    /** BIZ类型：客户模块 */
+    const BIZ_TYPE_CUSTOMER         = 300;
+    /** BIZ类型：号码模块 */
+    const BIZ_TYPE_MOBILE_IMPORT    = 400;
 
-    /** BIZ类型：系统 */
-    const BIZ_TYPE_SYSTEM   = 1001;
-    /** BIZ类型：员工 */
-    const BIZ_TYPE_EMPLOYEE = 1002;
-    /** BIZ类型：项目 */
-    const BIZ_TYPE_PROJECT  = 1003;
-    /** BIZ类型：客户 */
-    const BIZ_TYPE_CUSTOMER = 1004;
-    /** BIZ类型：号码导入 */
-    const BIZ_TYPE_MOBILE_IMPORT = 1005;
+
     /** BIZ操作：号码导入成功 */
-    const BIZ_ACTION_MOBILE_IMPORT_TRUE = 1005001;
+    const BIZ_ACTION_MOBILE_IMPORT_TRUE     = 400001;
     /** BIZ操作：号码导入失败 */
-    const BIZ_ACTION_MOBILE_IMPORT_FALSE = 1005002;
-
+    const BIZ_ACTION_MOBILE_IMPORT_FALSE    = 400002;
 
 }

@@ -8,7 +8,7 @@
 
 namespace App\Admin\Controllers\Employee;
 
-use App\Http\Controllers\Controller;
+use App\Admin\Controllers\Controller;
 use Encore\Admin\Grid;
 
 class CommonEmployeeController extends Controller

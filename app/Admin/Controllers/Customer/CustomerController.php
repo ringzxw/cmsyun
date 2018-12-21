@@ -2,18 +2,16 @@
 
 namespace App\Admin\Controllers\Customer;
 
+use App\Admin\Controllers\Controller;
 use App\Admin\Extensions\Columns\CustomerDetailRow;
 use App\Admin\Extensions\Columns\DeleteRow;
 use App\Admin\Extensions\Columns\UrlRow;
 use App\Admin\Extensions\Htmls\CustomerDetailHtml;
-use App\Helpers\Api\ApiResponse;
 use App\Models\Customer;
-use App\Http\Controllers\Controller;
 use App\Models\Employee;
 use App\Utils\FormatUtil;
 use App\Utils\OptionUtil;
 use Encore\Admin\Auth\Permission;
-use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -23,8 +21,6 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    use HasResourceActions;
-    use ApiResponse;
 
     /**
      * Index interface.

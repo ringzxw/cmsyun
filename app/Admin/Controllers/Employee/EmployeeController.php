@@ -10,13 +10,10 @@ use App\Admin\Extensions\Importers\EmployeeImporter;
 use App\Admin\Extensions\Templates\EmployeeTemplate;
 use App\Exports\EmployeeExport;
 use App\Exports\EmployeeImportErrorExport;
-use App\Helpers\Api\ApiResponse;
 use App\Imports\EmployeeImport;
 use App\Models\Employee;
 use App\Models\EmployeeImportError;
-use App\Models\EmployeeMessage;
 use Encore\Admin\Auth\Permission;
-use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -28,9 +25,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends CommonEmployeeController
 {
-    use HasResourceActions;
-    use ApiResponse;
-
     /**
      * Index interface.
      *

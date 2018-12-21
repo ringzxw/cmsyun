@@ -15,6 +15,44 @@ use App\Models\MobilePool;
 
 class FormatUtil
 {
+    /**
+     * 操作类型对应的模块
+     * @param $val
+     * @param string $default
+     * @return mixed|string
+     */
+    public static function getBizType($val, $default = '')
+    {
+        $map= [
+            ConstUtils::BIZ_TYPE_EMPLOYEE           => '员工模块',
+            ConstUtils::BIZ_TYPE_PROJECT            => '项目模块',
+            ConstUtils::BIZ_TYPE_CUSTOMER           => '客户模块',
+            ConstUtils::BIZ_TYPE_MOBILE_IMPORT      => '号码模块',
+        ];
+        if (array_key_exists($val, $map)) {
+            return $map[$val];
+        }
+        return $default;
+    }
+
+
+    /**
+     * 操作类型对于的icon
+     * @param $val
+     * @param string $default
+     * @return mixed|string
+     */
+    public static function getBizActionIcon($val, $default = '')
+    {
+        $map= [
+            ConstUtils::BIZ_ACTION_MOBILE_IMPORT_TRUE       => 'fa-check text-green',
+            ConstUtils::BIZ_ACTION_MOBILE_IMPORT_FALSE      => 'fa-warning text-yellow',
+        ];
+        if (array_key_exists($val, $map)) {
+            return $map[$val];
+        }
+        return $default;
+    }
 
     /**
      * 是否类型

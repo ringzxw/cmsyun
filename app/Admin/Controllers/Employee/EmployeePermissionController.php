@@ -2,18 +2,13 @@
 
 namespace App\Admin\Controllers\Employee;
 
-use App\Helpers\Api\ApiResponse;
-use App\Http\Controllers\Controller;
+use App\Admin\Controllers\Controller;
 use App\Models\Employee;
-use App\Services\PermissionService;
-use App\Services\Traits\ServicesTrait;
 use Encore\Admin\Layout\Content;
 use Illuminate\Http\Request;
 
 class EmployeePermissionController extends Controller
 {
-    use ApiResponse;
-    use ServicesTrait;
     /**
      * Index interface.
      *
@@ -34,12 +29,12 @@ class EmployeePermissionController extends Controller
      * @param Request $request
      * @return mixed
      */
-    public function apiSetting(Request $request,PermissionService $permissionService)
+    public function apiSetting(Request $request)
     {
         $employee_id = $request->get('employee_id');
         $ids = $request->get('ids');
         try{
-            $permissionService->bindPermission($employee_id,$ids);
+            $this->getPermissionService()->bindPermission($employee_id,$ids);
             return $this->message('设置成功');
         }catch (\Exception $e){
             return $this->message($e->getMessage(),'error');

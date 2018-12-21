@@ -7,11 +7,9 @@ use App\Admin\Extensions\Columns\AddTeamRow;
 use App\Admin\Extensions\Columns\DeleteRow;
 use App\Admin\Extensions\Columns\RemoveTeamRow;
 use App\Admin\Extensions\Columns\UrlRow;
-use App\Helpers\Api\ApiResponse;
 use App\Models\Employee;
 use App\Models\EmployeeTeam;
 use Encore\Admin\Auth\Permission;
-use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -21,9 +19,6 @@ use Illuminate\Http\Request;
 
 class EmployeeTeamController extends CommonEmployeeController
 {
-    use HasResourceActions;
-    use ApiResponse;
-
     /**
      * Index interface.
      *

@@ -2,13 +2,12 @@
 
 namespace App\Admin\Controllers\Project;
 
+use App\Admin\Controllers\Controller;
 use App\Admin\Extensions\Columns\DeleteRow;
 use App\Admin\Extensions\Columns\UrlRow;
 use App\Models\Project;
-use App\Http\Controllers\Controller;
 use App\Models\ProjectItem;
 use Encore\Admin\Auth\Permission;
-use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
@@ -18,8 +17,6 @@ use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
-    use HasResourceActions;
-
     /**
      * Index interface.
      *

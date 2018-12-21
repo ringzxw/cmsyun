@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\Employee;
 use App\Models\EmployeeMessage;
+use App\Utils\ConstUtils;
 
 class MessageService extends BaseService
 {
@@ -26,6 +27,20 @@ class MessageService extends BaseService
         if($this->employee){
             $employeeMessage->created_id = $this->employee->id;
         }
+        $employeeMessage->save();
+        return $employeeMessage;
+    }
+
+
+    /**
+     * 已读消息
+     * @param $id
+     * @return \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model
+     */
+    public function read($id)
+    {
+        $employeeMessage =  EmployeeMessage::findOrFail($id);
+        $employeeMessage->is_read = ConstUtils::READ_TRUE;
         $employeeMessage->save();
         return $employeeMessage;
     }

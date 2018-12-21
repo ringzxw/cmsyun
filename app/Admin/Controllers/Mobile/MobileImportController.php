@@ -2,29 +2,23 @@
 
 namespace App\Admin\Controllers\Mobile;
 
+use App\Admin\Controllers\Controller;
 use App\Admin\Extensions\Columns\CloseMobileImportRow;
 use App\Admin\Extensions\Templates\MobileImportTemplate;
-use App\Helpers\Api\ApiResponse;
 use App\Models\Employee;
 use App\Models\MobileImport;
-use App\Http\Controllers\Controller;
 use Encore\Admin\Auth\Permission;
 use App\Models\ProjectItem;
-use App\Services\Traits\ServicesTrait;
 use App\Utils\OptionUtil;
-use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Show;
 use Illuminate\Http\Request;
 
 class MobileImportController extends Controller
 {
-    use HasResourceActions;
-    use ServicesTrait;
-    use ApiResponse;
-
     /**
      * Index interface.
      *
@@ -52,6 +46,7 @@ class MobileImportController extends Controller
             ->header('号码导入')
             ->body($this->form());
     }
+
 
     /**
      * Make a grid builder.

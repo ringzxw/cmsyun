@@ -2,12 +2,17 @@
 
 namespace App\Admin\Controllers\Employee;
 
-use App\Helpers\Api\ApiResponse;
+use App\Admin\Controllers\Controller;
+use App\Admin\Controllers\Mobile\MobileImportController;
+use App\Admin\Extensions\Details\MobileImportDetail;
+use App\Models\Customer;
+use App\Models\Employee;
 use App\Models\EmployeeMessage;
-use App\Http\Controllers\Controller;
-use Encore\Admin\Controllers\HasResourceActions;
+use App\Models\MobileImport;
+use App\Models\Project;
+use App\Utils\ConstUtils;
+use App\Utils\FormatUtil;
 use Encore\Admin\Facades\Admin;
-use Encore\Admin\Form;
 use Encore\Admin\Grid;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
@@ -15,9 +20,6 @@ use Illuminate\Http\Request;
 
 class EmployeeMessageController extends Controller
 {
-    use HasResourceActions;
-    use ApiResponse;
-
     /**
      * Index interface.
      *
@@ -27,8 +29,7 @@ class EmployeeMessageController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->header('Index')
-            ->description('description')
+            ->header('个人消息')
             ->body($this->grid());
     }
 
@@ -41,39 +42,11 @@ class EmployeeMessageController extends Controller
      */
     public function show($id, Content $content)
     {
+        //点击详情后变为已读
+        $this->getMessageService()->read($id);
         return $content
-            ->header('Detail')
-            ->description('description')
+            ->header('消息详情')
             ->body($this->detail($id));
-    }
-
-    /**
-     * Edit interface.
-     *
-     * @param mixed $id
-     * @param Content $content
-     * @return Content
-     */
-    public function edit($id, Content $content)
-    {
-        return $content
-            ->header('Edit')
-            ->description('description')
-            ->body($this->form()->edit($id));
-    }
-
-    /**
-     * Create interface.
-     *
-     * @param Content $content
-     * @return Content
-     */
-    public function create(Content $content)
-    {
-        return $content
-            ->header('Create')
-            ->description('description')
-            ->body($this->form());
     }
 
     /**
@@ -84,20 +57,15 @@ class EmployeeMessageController extends Controller
     protected function grid()
     {
         $grid = new Grid(new EmployeeMessage);
-
-        $grid->id('Id');
-        $grid->employee_id('Employee id');
-        $grid->biz_type('Biz type');
-        $grid->biz_action('Biz action');
-        $grid->biz_id('Biz id');
-        $grid->title('Title');
-        $grid->content('Content');
-        $grid->creator_id('Creator id');
-        $grid->is_read('Is read');
-        $grid->created_at('Created at');
-        $grid->updated_at('Updated at');
-        $grid->deleted_at('Deleted at');
-
+        $grid->model()->where('employee_id',Admin::user()->id);
+        $grid->title('标题');
+        $grid->content('内容');
+        $grid->biz_type('模块');
+        $grid->biz_action('操作');
+        $grid->creator()->name('发送者')->display(function ($name){
+            return $name?:'系统';
+        });
+        $grid->created_at('接收时间');
         return $grid;
     }
 
@@ -110,51 +78,73 @@ class EmployeeMessageController extends Controller
     protected function detail($id)
     {
         $show = new Show(EmployeeMessage::findOrFail($id));
+        $show->title('标题');
+        $show->content('内容');
+        $show->biz_action('操作');
+        $show->creator()->name('发送者')->unescape()->as(function ($name) {
+            $name = $name?:'系统';
+            return "{$name}";
+        });;
+        $show->created_at('接收时间');
+        $show->biz('业务', function (Show $biz) {
+            $model = $biz->getModel();
+            if ($model instanceof Employee) {
+            }
+            if ($model instanceof Project) {
+            }
+            if ($model instanceof Customer) {
+            }
+            if ($model instanceof MobileImport) {
+                $biz->setResource('/admin/mobile-import');
+                $detail = new MobileImportDetail($biz);
+                $biz = $detail->render();
+            }
+            $biz->panel()->tools(function (Show\Tools $tools) {
+                $tools->disableEdit();
+                $tools->disableDelete();
+                $tools->disableList();
+            });
+        });
 
-        $show->id('Id');
-        $show->employee_id('Employee id');
-        $show->biz_type('Biz type');
-        $show->biz_action('Biz action');
-        $show->biz_id('Biz id');
-        $show->title('Title');
-        $show->content('Content');
-        $show->creator_id('Creator id');
-        $show->is_read('Is read');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
-        $show->deleted_at('Deleted at');
-
+        $show->panel()->tools(function (Show\Tools $tools) {
+            $tools->disableEdit();
+            $tools->disableDelete();
+        });
         return $show;
     }
 
-    /**
-     * Make a form builder.
-     *
-     * @return Form
-     */
-    protected function form()
+    public function apiIndex(Request $request)
     {
-        $form = new Form(new EmployeeMessage);
-
-        $form->number('employee_id', 'Employee id');
-        $form->number('biz_type', 'Biz type');
-        $form->number('biz_action', 'Biz action');
-        $form->number('biz_id', 'Biz id');
-        $form->text('title', 'Title');
-        $form->text('content', 'Content');
-        $form->number('creator_id', 'Creator id');
-        $form->switch('is_read', 'Is read');
-
-        return $form;
+        $employeeMessages = EmployeeMessage::where('employee_id',Admin::user()->id)->where('is_read',ConstUtils::READ_FALSE)->limit(5)->get();
+        $list = array();
+        foreach ($employeeMessages as $employeeMessage)
+        {
+            $list[] = $this->transform($employeeMessage);
+        }
+        $result['list'] = $list;
+        $total = EmployeeMessage::where('employee_id',Admin::user()->id)->where('is_read',ConstUtils::READ_FALSE)->count();
+        $result['total'] = $total?:'';
+        $width = 43;
+        if($total >= 10 && $total < 100){
+            $width = 50;
+        }elseif($total >= 100 && $total < 1000){
+            $width = 56;
+        }elseif($total >= 1000){
+            $width = 62;
+        }
+        $result['width'] = $width;
+        return $this->success($result);
     }
 
-    public function apiCount(Request $request)
+    private function transform(EmployeeMessage $employeeMessage)
     {
-        $count = EmployeeMessage::where('employee_id',Admin::user()->id)->count();
-        $result['count'] = $count;
-        $list = EmployeeMessage::where('employee_id',Admin::user()->id)->where('is_read',EmployeeMessage::i);
-
-
-        return $this->success($result);
+        $from = $employeeMessage->creator?$employeeMessage->creator->name:'系统';
+        $biz_action_icon = FormatUtil::getBizActionIcon($employeeMessage->biz_action);
+        $url = url('admin/employee-message/'.$employeeMessage->id);
+        $html = "<li><a href='".$url."'><i class='fa ".$biz_action_icon."'></i>".$from.'：'.$employeeMessage->content."</a></li>";
+        return [
+            'id'            => $employeeMessage->id,
+            'html'          => $html,
+        ];
     }
 }
