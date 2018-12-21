@@ -140,6 +140,11 @@ class CustomerController extends Controller
         $show->status('客户状态')->display(function ($status){
             return FormatUtil::getCustomerStatusHtml($status);
         });
+        $show->follows('跟进列表', function (Show $follows) {
+            $follows->id();
+            $follows->content()->limit(10);
+            $follows->created_at();
+        });
         return $show;
     }
 
@@ -191,8 +196,13 @@ class CustomerController extends Controller
     {
         try{
             $id = $request->get('id');
-            $customer = Customer::findOrFail($id);
+            $customer = Customer::with('follows')
+                ->withOnly('employee',['name'])
+                ->withOnly('creator',['name'])
+                ->withOnly('follows.creator',['name'])
+                ->findOrFail($id);
             $customer->html = clearHtml(response(view('admin.customer.detail-pop',compact('customer')))->getContent());
+            $customer->can_edit = Admin::user()->can('customer-edit')?true:false;
             if($customer){
                 return $this->success($customer);
             }

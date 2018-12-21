@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Customer extends BaseModel
 {
     use SoftDeletes;
+    protected $dates = ['deleted_at'];
     protected $guarded = [];
     /** 客户状态：待约访 */
     const STATUS_WAIT_MEET = -2;
@@ -87,11 +88,36 @@ class Customer extends BaseModel
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function employee()
+    {
+        return $this->belongsTo(Employee::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function scene()
+    {
+        return $this->belongsTo(Employee::class,'scene_id');
+    }
+
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\hasOne
      */
     public function detail()
     {
         return $this->hasOne(CustomerDetail::class);
+    }
+
+    /**
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\hasMany
+     */
+    public function follows()
+    {
+        return $this->hasMany(CustomerFollow::class);
     }
 
 

@@ -86,7 +86,7 @@ class EmployeeMessageController extends Controller
             return "{$name}";
         });;
         $show->created_at('接收时间');
-        $show->biz('业务', function (Show $biz) {
+        $show->biz(FormatUtil::getBizType($show->getModel()->biz_type), function (Show $biz) {
             $model = $biz->getModel();
             if ($model instanceof Employee) {
             }

@@ -35,21 +35,21 @@
         </div><!-- /.box-tools -->
     </div><!-- /.box-header -->
     <div class="box-body" style="display: block;">
-            <div>
-                <div class="container-fluid">
-                    <div class="vertical-bar"></div><p class="text-left h7">客户基本信息</p>
-                    <div class="row">
-                        <div class="col-md-12"><span style="color:#666666;">姓名：</span><span style="color:#000000;">{{ $customer->name }}</span></div>
-                    </div>
-
-                    <div class="row">
-                        <span class="col-md-6 col-sm-6 col-xs-6"><span style="color:#666666;">手机号：</span>{{ $customer->mobile }}</span>
-                        <span class="col-md-6 col-sm-6 col-xs-6"><span style="color:#666666;">状态：</span>{{ $customer->status_html }}</span>
-                    </div>
-                    <hr>
+        <div>
+            <div class="container-fluid">
+                <div class="vertical-bar"></div><p class="text-left h7">客户基本信息</p>
+                <div class="row">
+                    <div class="col-md-12"><span style="color:#666666;">姓名：</span><span style="color:#000000;">{{ $customer->name }}</span></div>
                 </div>
+
+                <div class="row">
+                    <span class="col-md-6 col-sm-6 col-xs-6"><span style="color:#666666;">手机号：</span>{{ $customer->mobile }}</span>
+                    <span class="col-md-6 col-sm-6 col-xs-6"><span style="color:#666666;">状态：</span>{{ $customer->status_html }}</span>
+                </div>
+                <hr>
             </div>
         </div>
+    </div>
 </div>
 <script>
 </script>

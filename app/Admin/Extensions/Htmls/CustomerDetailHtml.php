@@ -9,8 +9,6 @@
 namespace App\Admin\Extensions\Htmls;
 
 use App\Models\Customer;
-use App\Models\CustomerSuccessPrice;
-use App\Services\CustomerService;
 use Illuminate\Contracts\Support\Renderable;
 
 class CustomerDetailHtml implements Renderable

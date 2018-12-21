@@ -34,14 +34,14 @@ $('.grid-row-detail').on('click').click(function () {
                         showCancelButton: true,
                         focusConfirm: false,
                         width:'800px',
-                        confirmButtonText:'详情',
+                        confirmButtonText:'编辑',
                         cancelButtonText: '取消',
                         preConfirm: function (result) {
                             return new Promise(function (resolve, reject) {
-                                if(json.data.btn){
-                                   swal('您没有权限查看此房源', '', 'error');
+                                if(json.data.can_edit){
+                                   window.location.href = "/admin/customer/"+id+"/edit";
                                 }else {
-                                    swal('您没有权限查看此房源', '', 'error');
+                                   swal('你没有编辑客户的权限', '', 'error');
                                 }
                             });
                         },
